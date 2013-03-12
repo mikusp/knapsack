@@ -60,4 +60,8 @@ public class Knapsack {
 
         return fitness;
     }
+
+    public void mutateItem(int i) {
+        items.flip(i);
+    }
 }
