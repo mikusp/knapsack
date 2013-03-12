@@ -23,4 +23,8 @@ public class ItemCollection {
     public Iterable<Item> getAllItems() {
         return items;
     }
+
+    public int getSize() {
+        return items.size();
+    }
 }
