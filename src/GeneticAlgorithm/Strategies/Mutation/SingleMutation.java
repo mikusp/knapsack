@@ -1,6 +1,5 @@
 package GeneticAlgorithm.Strategies.Mutation;
 
-import GeneticAlgorithm.Models.ItemCollection;
 import GeneticAlgorithm.Models.Knapsack;
 import GeneticAlgorithm.Utils.RandomBoolean;
 
@@ -11,13 +10,12 @@ public class SingleMutation extends MutationStrategy {
      * where n is a number of all available items. This strategy
      * should result, on average, in one mutation per knapsack.
      * @param knapsack offspring from bred knapsacks
-     * @param itemsAvailable
      */
     @Override
-    public void mutate(Knapsack knapsack, ItemCollection itemsAvailable) {
-        double probabilityOfMutation = 1/(itemsAvailable.getSize());
+    public void mutate(Knapsack knapsack) {
+        double probabilityOfMutation = 1/(knapsack.getItemsAvailable().getSize());
 
-        for (int i = 0; i < itemsAvailable.getSize(); ++i)
+        for (int i = 0; i < knapsack.getItemsAvailable().getSize(); ++i)
             if (RandomBoolean.get(probabilityOfMutation))
                 knapsack.mutateItem(i);
     }

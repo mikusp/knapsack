@@ -18,14 +18,12 @@ public class Knapsack {
      */
     private final BitSet items;
     private final int sizeConstraint;
-    // This doesn't really belong here, but is needed to compute fitness
-    // Maybe fitness should be a method in ItemCollection taking a Knapsack
-    // as a parameter? TODO
     private final ItemCollection itemsAvailable;
 
     /**
      * Creates new Knapsack with random items inside.
      * Probability of including an item is 50%.
+     * @param sizeConstraint knapsack's size limit
      * @param itemsAvailable collection of available items
      */
     public Knapsack(int sizeConstraint, ItemCollection itemsAvailable) {
@@ -63,5 +61,9 @@ public class Knapsack {
 
     public void mutateItem(int i) {
         items.flip(i);
+    }
+
+    public ItemCollection getItemsAvailable() {
+        return itemsAvailable;
     }
 }
