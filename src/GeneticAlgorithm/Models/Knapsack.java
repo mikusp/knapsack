@@ -27,9 +27,7 @@ public class Knapsack {
      * @param itemsAvailable collection of available items
      */
     public Knapsack(int sizeConstraint, ItemCollection itemsAvailable) {
-        this.items = new BitSet(itemsAvailable.getSize());
-        this.sizeConstraint = sizeConstraint;
-        this.itemsAvailable = itemsAvailable;
+        this(new BitSet(itemsAvailable.getSize()), sizeConstraint, itemsAvailable);
 
         Random r = new Random();
         for (int i = 0; i < itemsAvailable.getSize(); ++i) {
@@ -38,6 +36,12 @@ public class Knapsack {
         }
     }
 
+    /**
+     * Used for constructing knapsacks during crossover
+     * @param items
+     * @param sizeConstraint
+     * @param itemsAvailable
+     */
     public Knapsack(BitSet items, int sizeConstraint, ItemCollection itemsAvailable) {
         this.items = items;
         this.sizeConstraint = sizeConstraint;
