@@ -1,12 +1,13 @@
 package GeneticAlgorithm.Models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class Population {
 
-    private int populationSize;
-    private int knapsackSize;
-    private ArrayList<Knapsack> knapsacks;
+    private final int populationSize;
+    private final int knapsackSize;
+    private final Collection<Knapsack> knapsacks = new ArrayList<>();
 
     public Population(int populationSize, int knapsackSize, ItemCollection items) {
         this.populationSize = populationSize;
@@ -26,9 +27,9 @@ public class Population {
 
     /**
      * Sums fitnesses of all knapsacks in a population
-     * @return population's fitness
+     * @return population's getFitnessSum
      */
-    public int fitness() {
+    public int getFitnessSum() {
         int fitness = 0;
 
         for (Knapsack knapsack : knapsacks) {
@@ -40,5 +41,55 @@ public class Population {
 
     public Iterable<Knapsack> getKnapsacks() {
         return knapsacks;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public int getMaximalFitness() {
+        int maximalFitness = 0;
+
+        for (Knapsack k : knapsacks) {
+            int fitness = k.fitness();
+
+            if (fitness > maximalFitness)
+                maximalFitness = fitness;
+        }
+
+        return maximalFitness;
+    }
+
+    public double getMeanFitness() {
+        return this.getFitnessSum() / this.getPopulationSize();
+    }
+
+    public int getMinimalFitness() {
+        int minimalFitness = knapsacks.iterator().next().fitness();
+
+        for (Knapsack k : knapsacks) {
+            int fitness = k.fitness();
+
+            if (fitness < minimalFitness)
+                minimalFitness = fitness;
+        }
+
+        return minimalFitness;
+    }
+
+    /**
+     * Finds best knapsack in a population
+     * @return binary string representing the knapsack
+     */
+    public String getBestGenome() {
+        Knapsack knapsack = null;
+        int maxFitness = 0;
+
+        for (Knapsack k : knapsacks) {
+            if (k.fitness() > maxFitness)
+                knapsack = k;
+        }
+
+        return knapsack.toBinaryString();
     }
 }

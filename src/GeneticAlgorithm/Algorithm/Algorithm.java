@@ -23,6 +23,22 @@ public class Algorithm {
         this.currentPopulation = initialPopulation;
     }
 
+    public int getMaximalFitness() {
+        return currentPopulation.getMaximalFitness();
+    }
+
+    public double getMeanFitness() {
+        return currentPopulation.getMeanFitness();
+    }
+
+    public int getMinimalFitness() {
+        return currentPopulation.getMinimalFitness();
+    }
+
+    public String getBestGenome() {
+        return currentPopulation.getBestGenome();
+    }
+
     /**
      * Runs a single step of an algorithm.
      * It should move currentPopulation to oldPopulation,

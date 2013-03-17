@@ -1,6 +1,8 @@
 package GeneticAlgorithm.Models;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Random;
 
 /**
@@ -69,6 +71,11 @@ public class Knapsack {
         return fitness;
     }
 
+    /**
+     * Removes i-th item if it's present or adds it
+     * if it's missing
+     * @param i index of an item from ItemCollection
+     */
     public void mutateItem(int i) {
         items.flip(i);
     }
@@ -77,11 +84,50 @@ public class Knapsack {
         return itemsAvailable;
     }
 
+    /**
+     * @return internal BitSet representing items inside a knapsack
+     */
     public BitSet getItemsInside() {
         return items;
     }
 
+    /**
+     *
+     * @return size limit of items in a knapsack
+     */
     public int getSizeConstraint() {
         return sizeConstraint;
+    }
+
+    /**
+     * Converts internal BitSet representation to String
+     * @return binary string, intended for use by GUI
+     */
+    public String toBinaryString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < items.length(); ++i) {
+            if (items.get(i))
+                sb.append('1');
+            else
+                sb.append('0');
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Gets names of all items
+     * @return names of items in a knapsack, intended for use by GUI
+     */
+    public Iterable<String> listItems() {
+        Collection<String> result = new ArrayList<>();
+
+        for (int i = 0; i < items.length(); ++i) {
+            if (items.get(i) && itemsAvailable.getItem(i).getName().length() > 0)
+                result.add(itemsAvailable.getItem(i).getName());
+        }
+
+        return result;
     }
 }

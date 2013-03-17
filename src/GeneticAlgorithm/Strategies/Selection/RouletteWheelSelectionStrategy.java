@@ -11,9 +11,9 @@ public class RouletteWheelSelectionStrategy extends SelectionStrategy {
 
     @Override
     public Collection<Knapsack> select(Population population) {
-        // TODO fitness of a population will be computed many times
+        // TODO getFitnessSum of a population will be computed many times
         // for a single population - easy optimization opportunity
-        int populationFitness = population.fitness();
+        int populationFitness = population.getFitnessSum();
 
         Collection<Knapsack> result = new ArrayList<>();
 
