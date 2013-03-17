@@ -11,18 +11,34 @@ public class Population {
     public Population(int populationSize, int knapsackSize, ItemCollection items) {
         this.populationSize = populationSize;
         this.knapsackSize = knapsackSize;
-        this.createPopulation(populationSize, knapsackSize, items);
+        this.createPopulation(items);
     }
 
     /**
      * Creates random population of knapsacks
-     * @param populationSize
-     * @param knapsackSize size limit of each knapsack
      * @param items all available items
      */
-    private void createPopulation(int populationSize, int knapsackSize, ItemCollection items) {
+    private void createPopulation(ItemCollection items) {
         for (int i = 0; i < populationSize; ++i) {
             knapsacks.add(new Knapsack(knapsackSize, items));
         }
+    }
+
+    /**
+     * Sums fitnesses of all knapsacks in a population
+     * @return population's fitness
+     */
+    public int fitness() {
+        int fitness = 0;
+
+        for (Knapsack knapsack : knapsacks) {
+            fitness += knapsack.fitness();
+        }
+
+        return fitness;
+    }
+
+    public Iterable<Knapsack> getKnapsacks() {
+        return knapsacks;
     }
 }
