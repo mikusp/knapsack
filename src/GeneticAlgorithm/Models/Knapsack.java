@@ -38,6 +38,12 @@ public class Knapsack {
         }
     }
 
+    public Knapsack(BitSet items, int sizeConstraint, ItemCollection itemsAvailable) {
+        this.items = items;
+        this.sizeConstraint = sizeConstraint;
+        this.itemsAvailable = itemsAvailable;
+    }
+
     /**
      * Computes fitness of a knapsack.
      * Value of an item is added to overall fitness only if
@@ -65,5 +71,13 @@ public class Knapsack {
 
     public ItemCollection getItemsAvailable() {
         return itemsAvailable;
+    }
+
+    public BitSet getItemsInside() {
+        return items;
+    }
+
+    public int getSizeConstraint() {
+        return sizeConstraint;
     }
 }
