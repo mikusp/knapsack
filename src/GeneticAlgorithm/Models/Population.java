@@ -2,6 +2,8 @@ package GeneticAlgorithm.Models;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class Population {
 
@@ -91,5 +93,17 @@ public class Population {
         }
 
         return knapsack.toBinaryString();
+    }
+
+    /**
+     * Returns amount of best knapsacks in a population
+     * @param amount
+     * @return
+     */
+    public Collection<Knapsack> getBestKnapsacks(int amount) {
+        List<Knapsack> sortedKnapsacks = new ArrayList<>(knapsacks);
+        Collections.sort(sortedKnapsacks);
+
+        return sortedKnapsacks.subList(0, amount - 1);
     }
 }

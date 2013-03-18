@@ -9,7 +9,7 @@ import java.util.Random;
  * Knapsack is an equivalent of genome in our algorithm.
  * It consists of zero or more items.
  */
-public class Knapsack {
+public class Knapsack implements Comparable<Knapsack> {
 
     /**
      * Items currently being in a knapsack represented as a binary string.
@@ -129,5 +129,19 @@ public class Knapsack {
         }
 
         return result;
+    }
+
+    /**
+     * Compares this object to other Knapsack by fitness value.
+     * Comparison is done in a REVERSE order.
+     * @param o
+     * @return -1 if this is greater, 0 if equal, 1 if other is greater
+     */
+    @Override
+    public int compareTo(Knapsack o) {
+        int thisFitness = this.fitness();
+        int otherFitness = o.fitness();
+
+        return (thisFitness > otherFitness ? -1 : (thisFitness == otherFitness ? 0 : 1));
     }
 }
