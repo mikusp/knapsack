@@ -2,6 +2,7 @@ package GeneticAlgorithm.Algorithm;
 
 import GeneticAlgorithm.Models.Population;
 import GeneticAlgorithm.Strategies.Crossover.CrossoverStrategy;
+import GeneticAlgorithm.Strategies.Elitism.ElitismStrategy;
 import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
 import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
 
@@ -11,15 +12,18 @@ public class Algorithm {
     private final SelectionStrategy selectionStrategy;
     private final CrossoverStrategy crossoverStrategy;
     private final MutationStrategy mutationStrategy;
+    private final ElitismStrategy elitismStrategy;
     private Population currentPopulation;
 
     public Algorithm(CrossoverStrategy crossoverStrategy,
                      SelectionStrategy selectionStrategy,
                      MutationStrategy mutationStrategy,
+                     ElitismStrategy elitismStrategy,
                      Population initialPopulation) {
         this.crossoverStrategy = crossoverStrategy;
         this.selectionStrategy = selectionStrategy;
         this.mutationStrategy = mutationStrategy;
+        this.elitismStrategy = elitismStrategy;
         this.currentPopulation = initialPopulation;
     }
 

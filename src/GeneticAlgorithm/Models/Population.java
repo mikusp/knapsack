@@ -106,4 +106,12 @@ public class Population {
 
         return sortedKnapsacks.subList(0, amount - 1);
     }
+
+    /**
+     * Imports all knapsacks from given population
+     * @param population
+     */
+    public void add(Collection<Knapsack> population) {
+        knapsacks.addAll(population);
+    }
 }
