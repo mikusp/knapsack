@@ -7,24 +7,38 @@ import java.util.List;
 
 public class Population {
 
-    private final int populationSize;
+    private int populationSize;
     private final int knapsackSize;
+    private final ItemCollection itemCollection;
     private final Collection<Knapsack> knapsacks = new ArrayList<>();
 
     public Population(int populationSize, int knapsackSize, ItemCollection items) {
         this.populationSize = populationSize;
         this.knapsackSize = knapsackSize;
-        this.createPopulation(items);
+        this.itemCollection = items;
+        this.createPopulation();
+    }
+
+    public int getKnapsackSize() {
+        return knapsackSize;
+    }
+
+    public Population(int knapsackSize, ItemCollection items) {
+        this.populationSize = 0;
+        this.knapsackSize = knapsackSize;
+        this.itemCollection = items;
+    }
+
+    public ItemCollection getItemCollection() {
+        return itemCollection;
     }
 
     /**
      * Creates random population of knapsacks
-     * @param items all available items
      */
-    private void createPopulation(ItemCollection items) {
-        for (int i = 0; i < populationSize; ++i) {
-            knapsacks.add(new Knapsack(knapsackSize, items));
-        }
+    private void createPopulation() {
+        for (int i = 0; i < populationSize; ++i)
+            knapsacks.add(new Knapsack(knapsackSize, itemCollection));
     }
 
     /**
@@ -113,5 +127,9 @@ public class Population {
      */
     public void add(Collection<Knapsack> population) {
         knapsacks.addAll(population);
+    }
+
+    public void updateSize() {
+        this.populationSize = knapsacks.size();
     }
 }
