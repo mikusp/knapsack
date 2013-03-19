@@ -61,11 +61,13 @@ public class Knapsack implements Comparable<Knapsack> {
         int fitness = 0;
         int currentSize = 0;
 
-        for (int i = 0; i < items.size(); ++i) {
-            currentSize += itemsAvailable.getItem(i).getSize();
+        for (int i = 0; i < items.length(); ++i) {
+            if (items.get(i)) {
+                currentSize += itemsAvailable.getItem(i).getSize();
 
-            if (currentSize <= sizeConstraint)
-                fitness += itemsAvailable.getItem(i).getValue();
+                if (currentSize <= sizeConstraint)
+                    fitness += itemsAvailable.getItem(i).getValue();
+            }
         }
 
         return fitness;
