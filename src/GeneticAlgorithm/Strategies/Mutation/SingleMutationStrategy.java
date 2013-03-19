@@ -3,7 +3,7 @@ package GeneticAlgorithm.Strategies.Mutation;
 import GeneticAlgorithm.Models.Knapsack;
 import GeneticAlgorithm.Utils.RandomBoolean;
 
-public class SingleMutation extends MutationStrategy {
+public class SingleMutationStrategy extends MutationStrategy {
 
     /**
      * Mutate each item in a knapsack with 1/n probability
