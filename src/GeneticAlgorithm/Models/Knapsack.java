@@ -122,7 +122,7 @@ public class Knapsack implements Comparable<Knapsack> {
      * Gets names of all items
      * @return names of items in a knapsack, intended for use by GUI
      */
-    public Iterable<String> listItems() {
+    public Collection<String> listItems() {
         Collection<String> result = new ArrayList<>();
 
         for (int i = 0; i < items.length(); ++i) {

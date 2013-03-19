@@ -55,6 +55,10 @@ public class Algorithm {
         return currentPopulation.getBestGenome();
     }
 
+    public Collection<String> getBestItems() {
+        return currentPopulation.getBestItems();
+    }
+
     /**
      * Runs a single step of an algorithm.
      * It should move currentPopulation to oldPopulation,

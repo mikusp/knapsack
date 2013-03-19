@@ -118,7 +118,7 @@ public class Population {
         List<Knapsack> sortedKnapsacks = new ArrayList<>(knapsacks);
         Collections.sort(sortedKnapsacks);
 
-        return sortedKnapsacks.subList(0, amount - 1);
+        return sortedKnapsacks.subList(0, amount);
     }
 
     /**
@@ -131,5 +131,19 @@ public class Population {
 
     public void updateSize() {
         this.populationSize = knapsacks.size();
+    }
+
+    /**
+     * Ugly
+     * @return
+     */
+    public Collection<String> getBestItems() {
+        Collection<Knapsack> k = this.getBestKnapsacks(1);
+        Collection<String> res = null;
+
+        for (Knapsack ks : k)
+            res = ks.listItems();
+
+        return res;
     }
 }
