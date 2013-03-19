@@ -4,18 +4,18 @@ import GeneticAlgorithm.Models.Knapsack;
 import GeneticAlgorithm.Models.Population;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 public class RouletteWheelSelectionStrategy extends SelectionStrategy {
 
     @Override
-    public Collection<Knapsack> select(Population population) {
+    public List<Knapsack> select(Population population) {
         // TODO getFitnessSum of a population will be computed many times
         // for a single population - easy optimization opportunity
         int populationFitness = population.getFitnessSum();
 
-        Collection<Knapsack> result = new ArrayList<>();
+        List<Knapsack> result = new ArrayList<>();
 
         Random rand = new Random();
 
