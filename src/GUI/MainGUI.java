@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Hashtable;
 
 import javax.swing.DefaultComboBoxModel;
@@ -26,26 +27,23 @@ import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
 
 
 public class MainGUI extends JFrame {
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable table;
+	private ListManager listManager = new ListManager();
 
 	/**
 	 * Launch the application.
@@ -62,10 +60,11 @@ public class MainGUI extends JFrame {
 			}
 		});
 	}
-
+	
 	/**
 	 * Create the frame.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public MainGUI() {
 		try { UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception exc) { JOptionPane.showMessageDialog(null, "Error!"); }
@@ -94,9 +93,11 @@ public class MainGUI extends JFrame {
 				"Name", "Size", "Value"
 			}
 		) {
+			private static final long serialVersionUID = 1L;
 			Class[] columnTypes = new Class[] {
 				String.class, Integer.class, Integer.class
 			};
+			
 			public Class getColumnClass(int columnIndex) {
 				return columnTypes[columnIndex];
 			}
@@ -107,6 +108,7 @@ public class MainGUI extends JFrame {
 		table.getColumnModel().getColumn(1).setPreferredWidth(50);
 		table.getColumnModel().getColumn(2).setResizable(false);
 		table.getColumnModel().getColumn(2).setPreferredWidth(50);
+		table.setRowSelectionInterval(0, 0);
 		scrollPane.setViewportView(table);
 		Dimension d = table.getPreferredSize();
 		scrollPane.setPreferredSize(
@@ -321,10 +323,10 @@ public class MainGUI extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
 				hashtable.put(0, new JLabel("0"));
-			    double temp = (double)slider.getValue()/100;
-			    hashtable.put(50, new JLabel(temp+""));
-			    hashtable.put(100, new JLabel("1"));
-			    slider.setLabelTable(hashtable);
+				double temp = (double)slider.getValue()/100;
+				hashtable.put(50, new JLabel(temp+""));
+				hashtable.put(100, new JLabel("1"));
+				slider.setLabelTable(hashtable);
 				slider.setPaintLabels(true);
 			}
 		});
@@ -333,13 +335,19 @@ public class MainGUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.addRow(new Object[]{"", "0", "0"});
+				table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
 			}
 		});
 		
 		btnDeleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.removeRow(table.getSelectedRow());
+				try
+				{
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					model.removeRow(table.getSelectedRow());
+					table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
+				}
+				catch(Exception exc){ JOptionPane.showMessageDialog(null, "List empty!");}
 			}
 		});
 		
@@ -348,8 +356,18 @@ public class MainGUI extends JFrame {
 				JFileChooser fileChooser = new JFileChooser();
 				int returnValue = fileChooser.showOpenDialog(MainGUI.this);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
-		            File file = fileChooser.getSelectedFile();
-		            //Zabawa z plikiem już wczytanym
+					File file = fileChooser.getSelectedFile();
+		            try { 
+		            	table.setModel(listManager.loadList(file)); 
+		            	table.getColumnModel().getColumn(0).setResizable(false);
+		        		table.getColumnModel().getColumn(0).setPreferredWidth(140);
+		        		table.getColumnModel().getColumn(1).setResizable(false);
+		        		table.getColumnModel().getColumn(1).setPreferredWidth(50);
+		        		table.getColumnModel().getColumn(2).setResizable(false);
+		        		table.getColumnModel().getColumn(2).setPreferredWidth(50);
+		        		table.setRowSelectionInterval(0, 0);
+		            } 
+		            catch (FileNotFoundException e1) { JOptionPane.showMessageDialog(null, "Loading Error!"); }
 		        }
 			}
 		});
@@ -359,8 +377,9 @@ public class MainGUI extends JFrame {
 				JFileChooser fileChooser = new JFileChooser();
 				int returnValue = fileChooser.showSaveDialog(MainGUI.this);
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
-		            File file = fileChooser.getSelectedFile();
-		            //Zabawa z plikiem do zapisania
+					File file = fileChooser.getSelectedFile();
+					try{ listManager.saveList(file, table.getModel());}
+					catch (FileNotFoundException e1) { JOptionPane.showMessageDialog(null, "Saving Error!"); }
 		        }
 			}
 		});
