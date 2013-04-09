@@ -8,7 +8,7 @@ import javax.swing.table.TableModel;
 
 
 public class ListManager {
-  
+	
 	public void saveList(File file, TableModel model) throws FileNotFoundException
 	{
 		PrintWriter out = new PrintWriter(file);
@@ -23,9 +23,7 @@ public class ListManager {
 	
 	public DefaultTableModel loadList(File file) throws FileNotFoundException
 	{
-		DefaultTableModel model = new DefaultTableModel(new Object[][] {
-				null,
-			},
+		DefaultTableModel model = new DefaultTableModel(null,
 			new String[] {
 				"Name", "Size", "Value"
 			}
@@ -42,7 +40,6 @@ public class ListManager {
 				return columnTypes[columnIndex];
 			}
 		};
-		model.removeRow(0);
 		
 		Scanner in = new Scanner(file);
 		while(in.hasNext())
