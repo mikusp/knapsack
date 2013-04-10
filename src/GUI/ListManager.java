@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Random;
 import java.util.Scanner;
 
 import javax.swing.table.DefaultTableModel;
@@ -49,5 +50,32 @@ public class ListManager {
 		in.close();
 		
 		return model;
+	}
+	
+	public DefaultTableModel generateList(TableModel model, int howMany, int maxSize, int maxValue)
+	{
+		DefaultTableModel defmodel = new DefaultTableModel(null,
+				new String[] {
+					"Name", "Size", "Value"
+				}
+			) {
+
+				private static final long serialVersionUID = 1L;
+
+				@SuppressWarnings("rawtypes")
+				Class[] columnTypes = new Class[] {
+					String.class, Integer.class, Integer.class
+				};
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			};
+		Random random = new Random();
+		//Przepisanie elementów
+		for(int i=0; i<model.getRowCount(); i++) defmodel.addRow(new Object[]{model.getValueAt(i, 0),model.getValueAt(i, 1),model.getValueAt(i, 2)});
+		//Dodawanie randomów
+		for(int i=0; i<howMany; i++) defmodel.addRow(new Object[]{"RandomItem"+(defmodel.getRowCount()), random.nextInt(maxSize)+1, random.nextInt(maxValue)+1}); 
+		return defmodel;
 	}
 }
