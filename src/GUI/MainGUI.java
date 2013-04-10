@@ -70,7 +70,7 @@ public class MainGUI extends JFrame {
 		} catch (Exception exc) { JOptionPane.showMessageDialog(null, "Error!"); }
 		setTitle("Knapsack Problem");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1090, 701);
+		setBounds(0, 0, 1090, 701);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -193,8 +193,8 @@ public class MainGUI extends JFrame {
 		
 		JLabel lblHowManyRandom = new JLabel("Number of random items");
 		
-		JSpinner spinner = new JSpinner();
-		spinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		final JSpinner howManySpinner = new JSpinner();
+		howManySpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 		
 		JButton btnGenerateRandomItems = new JButton("Generate");
 		
@@ -206,11 +206,11 @@ public class MainGUI extends JFrame {
 		
 		JLabel lblMaxSize = new JLabel("Max Size:");
 		
-		JSpinner spinner_4 = new JSpinner();
-		spinner_4.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		final JSpinner maxValueSpinner = new JSpinner();
+		maxValueSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
 		
-		JSpinner spinner_5 = new JSpinner();
-		spinner_5.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+		final JSpinner maxSizeSpinner = new JSpinner();
+		maxSizeSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
 		
 		JButton btnDeleteButton = new JButton("Delete item");
 		
@@ -225,15 +225,15 @@ public class MainGUI extends JFrame {
 					.addGap(39)
 					.addComponent(lblHowManyRandom)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(spinner, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
+					.addComponent(howManySpinner, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblMaxValue)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(spinner_4, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
+					.addComponent(maxValueSpinner, GroupLayout.PREFERRED_SIZE, 51, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblMaxSize)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(spinner_5, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addComponent(maxSizeSpinner, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
 					.addGap(18)
 					.addComponent(btnGenerateRandomItems)
 					.addGap(52)
@@ -250,11 +250,11 @@ public class MainGUI extends JFrame {
 						.addComponent(btnAddNewRow)
 						.addComponent(btnDeleteButton)
 						.addComponent(lblHowManyRandom)
-						.addComponent(spinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(howManySpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblMaxValue)
-						.addComponent(spinner_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(maxValueSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblMaxSize)
-						.addComponent(spinner_5, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(maxSizeSpinner, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnGenerateRandomItems)
 						.addComponent(btnLoadFromFile)
 						.addComponent(btnSaveToFile))
@@ -381,6 +381,19 @@ public class MainGUI extends JFrame {
 					try{ listManager.saveList(file, table.getModel());}
 					catch (FileNotFoundException e1) { JOptionPane.showMessageDialog(null, "Saving Error!"); }
 		        }
+			}
+		});
+		
+		btnGenerateRandomItems.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				table.setModel(listManager.generateList(table.getModel(), (int)howManySpinner.getValue(), (int)maxSizeSpinner.getValue(), (int)maxValueSpinner.getValue())); 
+            	table.getColumnModel().getColumn(0).setResizable(false);
+        		table.getColumnModel().getColumn(0).setPreferredWidth(140);
+        		table.getColumnModel().getColumn(1).setResizable(false);
+        		table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        		table.getColumnModel().getColumn(2).setResizable(false);
+        		table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        		table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
 			}
 		});
 	}
