@@ -49,8 +49,6 @@ import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
 import net.miginfocom.swing.MigLayout;
 
-import static java.lang.System.out;
-
 
 public class MainGUI extends JFrame {
 
@@ -63,6 +61,8 @@ public class MainGUI extends JFrame {
     private ListManager listManager = new ListManager();
     private Integer randomCount = 0;
     private JTable table_1;
+    private Algorithm algorithm = null;
+    private IterationThread iterationThread = null;
 
     /**
      * Launch the application.
@@ -207,15 +207,15 @@ public class MainGUI extends JFrame {
         panel_6.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         tabbedPane.addTab("Initial Conditions", null, panel_6, null);
 
-        JLabel lblPopulation = new JLabel("Population Size:");
+        final JLabel lblPopulation = new JLabel("Population Size:");
 
-        JSpinner spinner_1 = new JSpinner();
-        spinner_1.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        final JSpinner populationSpinner = new JSpinner();
+        populationSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 
         JLabel lblIteration = new JLabel("Iterations:");
 
-        JSpinner spinner_3 = new JSpinner();
-        spinner_3.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        final JSpinner iterationSpinner = new JSpinner();
+        iterationSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
 
         JLabel lblMutation = new JLabel("Mutation probability:");
 
@@ -240,9 +240,9 @@ public class MainGUI extends JFrame {
         slider_1.setSnapToTicks(true);
         panel_6.setLayout(new MigLayout("", "[76px][113px][65px][124px][120px][220px][130px][200px]", "[29px]"));
         panel_6.add(lblPopulation, "cell 0 0,alignx left,aligny center");
-        panel_6.add(spinner_1, "cell 1 0,growx,aligny center");
+        panel_6.add(populationSpinner, "cell 1 0,growx,aligny center");
         panel_6.add(lblIteration, "cell 2 0,alignx center,aligny center");
-        panel_6.add(spinner_3, "cell 3 0,growx,aligny center");
+        panel_6.add(iterationSpinner, "cell 3 0,growx,aligny center");
         panel_6.add(lblMutation, "cell 4 0,alignx center,aligny center");
         panel_6.add(slider, "cell 5 0,alignx left,aligny center");
         panel_6.add(lblCrossoverProbability, "cell 6 0,alignx center,aligny center");
@@ -368,8 +368,11 @@ public class MainGUI extends JFrame {
         JButton btnStart = new JButton("Start");
         panel_5.add(btnStart);
 
-        final JButton btnStop = new JButton("Stop");
+        final JButton btnStop = new JButton("Pause");
         panel_5.add(btnStop);
+
+        final JButton btnResume = new JButton("Resume");
+        panel_5.add(btnResume);
 
         final JButton btnNextStep = new JButton("Next step");
         panel_5.add(btnNextStep);
@@ -504,54 +507,50 @@ public class MainGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ItemCollection itemsCollection = new ItemCollection();
                 for(int i=0; i<table.getRowCount(); i++) itemsCollection.addItem(new Item(Integer.parseInt(table.getValueAt(i,1)+""), Integer.parseInt(table.getValueAt(i,2)+""), (String)table.getValueAt(i,0)));
-                //TODO
-                Population initialPopulation = new Population(500, 500, itemsCollection);
-
-                //TODO - SimpleElitismStrategy
-                ElitismStrategy elitismStrategy;
-                if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
-                else if(elitismBox.getSelectedIndex() == 0) elitismStrategy = new NullElitismStrategy();
-                else elitismStrategy = new SimpleElitismStrategy(2);
-
-                CrossoverStrategy crossoverStrategy;
-                if(crossoverBox.getSelectedIndex() == 0) crossoverStrategy = new SplitStrategy((double)slider_1.getValue()/100);
-                else crossoverStrategy = new SplitStrategy((double)slider_1.getValue()/100);
-
-                MutationStrategy mutationStrategy;
-                if(mutationBox.getSelectedIndex() == 0) mutationStrategy = new SingleMutationStrategy();
-                else mutationStrategy = new SingleMutationStrategy();
-
-                SelectionStrategy selectionStrategy;
-                if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
-                else  selectionStrategy = new RouletteWheelSelectionStrategy();
-
-                Algorithm a = new Algorithm(crossoverStrategy, selectionStrategy, mutationStrategy, elitismStrategy, initialPopulation);
-                //TODO - EDIT - lista, max, mean, min, iteracje
-                DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
-                    Class[] columnTypes = new Class[] {
-                            String.class
-                    };
-                    public Class getColumnClass(int columnIndex) {
-                        return columnTypes[columnIndex];
-                    }
-                };
-                for (String s : a.getBestItems()) tempmodel.addRow(new Object[]{s});
-                table_1.setModel(tempmodel);
-                table_1.getColumnModel().getColumn(0).setResizable(false);
-                table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
-                maxFitnessLabel.setText(a.getMaximalFitness()+"");
-                meanFitenssLabel.setText(a.getMeanFitness()+"");
-                minFitnessLabel.setText(a.getMinimalFitness()+"");
+                int population = Integer.parseInt(populationSpinner.getValue() + "");
+                int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
+                double crossoverProbability = (double)slider_1.getValue()/100;
+                iterationThread = new IterationThread(contentPane, iterations, population, crossoverProbability, itemsCollection, algorithm);
+                iterationThread.start();
             }
         });
 
         btnStop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(iterationThread != null) iterationThread.pauseThread();
+                else JOptionPane.showMessageDialog(null,"Start first!");
+            }
+        });
+
+        btnResume.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(iterationThread != null) iterationThread.resumeThread();
+                else JOptionPane.showMessageDialog(null,"Start first!");
             }
         });
 
         btnNextStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if(algorithm != null)
+                {
+                    algorithm.step();
+                    DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
+                        Class[] columnTypes = new Class[] {
+                                String.class
+                        };
+                        public Class getColumnClass(int columnIndex) {
+                            return columnTypes[columnIndex];
+                        }
+                    };
+                    for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
+                    table_1.setModel(tempmodel);
+                    table_1.getColumnModel().getColumn(0).setResizable(false);
+                    table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
+                    maxFitnessLabel.setText(algorithm.getMaximalFitness()+"");
+                    meanFitenssLabel.setText(algorithm.getMeanFitness()+"");
+                    minFitnessLabel.setText(algorithm.getMinimalFitness()+"");
+                }
+                else JOptionPane.showMessageDialog(null, "Start first!");
             }
         });
     }
