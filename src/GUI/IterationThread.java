@@ -12,6 +12,7 @@ import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
 import GeneticAlgorithm.Strategies.Mutation.SingleMutationStrategy;
 import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
+import com.sun.tools.visualvm.charts.SimpleXYChartSupport;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -19,25 +20,23 @@ import javax.swing.table.DefaultTableModel;
 public class IterationThread extends Thread {
 
     private JComboBox crossoverBox, mutationBox, elitismBox, selectionBox;
-    private JLabel maxFitnessLabel, meanFitnessLabel, minFitnessLabel;
     private JTable table_1;
     private int iteration;
     private Algorithm algorithm;
     private boolean running = true;
+    private SimpleXYChartSupport support;
 
-    public IterationThread(JPanel contentPane, int iteration, int population, double crossoverProbability, ItemCollection itemCollection, Algorithm algorithm)
+    public IterationThread(JPanel contentPane, int iteration, int population, double crossoverProbability, ItemCollection itemCollection, Algorithm algorithm, SimpleXYChartSupport support)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
+        this.support = support;
 
         table_1 = (JTable)((JViewport)((JScrollPane)((JPanel)((JPanel)((JPanel)contentPane.getComponent(0)).getComponent(1)).getComponent(1)).getComponent(0)).getComponent(0)).getComponent(0);
         crossoverBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(1);
         mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
         elitismBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(5);
         selectionBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(7);
-        maxFitnessLabel = (JLabel)((JPanel)((JPanel)((JPanel)contentPane.getComponent(0)).getComponent(1)).getComponent(0)).getComponent(1);
-        meanFitnessLabel = (JLabel)((JPanel)((JPanel)((JPanel)contentPane.getComponent(0)).getComponent(1)).getComponent(0)).getComponent(3);
-        minFitnessLabel = (JLabel)((JPanel)((JPanel)((JPanel)contentPane.getComponent(0)).getComponent(1)).getComponent(0)).getComponent(5);
 
         ElitismStrategy elitismStrategy;
         if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
@@ -74,10 +73,8 @@ public class IterationThread extends Thread {
         table_1.setModel(tempmodel);
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
-        maxFitnessLabel.setText(algorithm.getMaximalFitness()+"");
-        meanFitnessLabel.setText(algorithm.getMeanFitness()+"");
-        minFitnessLabel.setText(algorithm.getMinimalFitness()+"");
 
+        long lastTime=0;
         for(int i=1; i<iteration; i++)
         {
             while(!running) //Bezczynność
@@ -86,9 +83,16 @@ public class IterationThread extends Thread {
                 catch (InterruptedException e) {JOptionPane.showMessageDialog(null, "Error!"); }
             }
             algorithm.step();
-            maxFitnessLabel.setText(algorithm.getMaximalFitness()+"");
-            meanFitnessLabel.setText(algorithm.getMeanFitness()+"");
-            minFitnessLabel.setText(algorithm.getMinimalFitness()+"");
+            if(lastTime != System.currentTimeMillis())
+            {
+                lastTime = System.currentTimeMillis();
+                long[] values = new long[3];
+                values[0] = algorithm.getMaximalFitness();
+                values[1] = (long) algorithm.getMeanFitness();
+                values[2] = algorithm.getMinimalFitness();
+                support.addValues(lastTime,values);
+                support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
+            }
         }
         JOptionPane.showMessageDialog(null,"DONE");
     }
@@ -105,14 +109,11 @@ public class IterationThread extends Thread {
                 return columnTypes[columnIndex];
             }
         };
-        maxFitnessLabel.setText(algorithm.getMaximalFitness()+"");
-        meanFitnessLabel.setText(algorithm.getMeanFitness()+"");
-        minFitnessLabel.setText(algorithm.getMinimalFitness()+"");
         for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
         table_1.setModel(tempmodel);
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
     }
-    
+
     public void resumeThread(){ running = true; }
 }
