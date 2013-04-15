@@ -37,16 +37,6 @@ import javax.swing.table.DefaultTableModel;
 import GeneticAlgorithm.Algorithm.Algorithm;
 import GeneticAlgorithm.Models.Item;
 import GeneticAlgorithm.Models.ItemCollection;
-import GeneticAlgorithm.Models.Population;
-import GeneticAlgorithm.Strategies.Crossover.CrossoverStrategy;
-import GeneticAlgorithm.Strategies.Crossover.SplitStrategy;
-import GeneticAlgorithm.Strategies.Elitism.ElitismStrategy;
-import GeneticAlgorithm.Strategies.Elitism.NullElitismStrategy;
-import GeneticAlgorithm.Strategies.Elitism.SimpleElitismStrategy;
-import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
-import GeneticAlgorithm.Strategies.Mutation.SingleMutationStrategy;
-import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
-import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
 import net.miginfocom.swing.MigLayout;
 
 
@@ -133,33 +123,12 @@ public class MainGUI extends JFrame {
         JPanel panel_3 = new JPanel();
         panel_3.setForeground(Color.BLACK);
         panel_3.setBorder(new LineBorder(new Color(0, 0, 0)));
-        panel_3.setBackground(Color.LIGHT_GRAY);
+        panel_3.setBackground(Color.WHITE);
         panel_1.add(panel_3, BorderLayout.CENTER);
         panel_3.setLayout(new BorderLayout(0, 0));
 
-        JPanel panel_2 = new JPanel();
-        panel_2.setBackground(Color.LIGHT_GRAY);
-        FlowLayout flowLayout_2 = (FlowLayout) panel_2.getLayout();
-        flowLayout_2.setHgap(20);
-        panel_3.add(panel_2, BorderLayout.NORTH);
-
-        JLabel lblMax = new JLabel("Maximal Fitness:");
-        panel_2.add(lblMax);
-
-        final JLabel maxFitnessLabel = new JLabel("0");
-        panel_2.add(maxFitnessLabel);
-
-        JLabel lblNewLabel = new JLabel("Mean Fitness:");
-        panel_2.add(lblNewLabel);
-
-        final JLabel meanFitenssLabel = new JLabel("0");
-        panel_2.add(meanFitenssLabel);
-
-        JLabel lblNewLabel_1 = new JLabel("Minimal Fitenss:");
-        panel_2.add(lblNewLabel_1);
-
-        final JLabel minFitnessLabel = new JLabel("0");
-        panel_2.add(minFitnessLabel);
+        final PlotPanel plotPanel = new PlotPanel();
+        panel_3.add(plotPanel, BorderLayout.CENTER);
 
         JPanel panel_7 = new JPanel();
         panel_3.add(panel_7, BorderLayout.EAST);
@@ -169,7 +138,7 @@ public class MainGUI extends JFrame {
         panel_7.add(scrollPane_1, BorderLayout.CENTER);
 
         table_1 = new JTable();
-        table_1.setBackground(Color.LIGHT_GRAY);
+        table_1.setBackground(Color.WHITE);
         table_1.setFillsViewportHeight(true);
         table_1.setModel(new DefaultTableModel(
                 new Object[][] {
@@ -193,7 +162,7 @@ public class MainGUI extends JFrame {
         scrollPane_1.setPreferredSize(new Dimension(d2.width,table_1.getRowHeight()*3+1));
 
         JPanel panel_8 = new JPanel();
-        panel_8.setBackground(Color.LIGHT_GRAY);
+        panel_8.setBackground(Color.WHITE);
         panel_7.add(panel_8, BorderLayout.NORTH);
 
         JLabel lblActualBestItems = new JLabel("Best Items");
@@ -210,12 +179,12 @@ public class MainGUI extends JFrame {
         final JLabel lblPopulation = new JLabel("Population Size:");
 
         final JSpinner populationSpinner = new JSpinner();
-        populationSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        populationSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
 
         JLabel lblIteration = new JLabel("Iterations:");
 
         final JSpinner iterationSpinner = new JSpinner();
-        iterationSpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        iterationSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
 
         JLabel lblMutation = new JLabel("Mutation probability:");
 
@@ -255,17 +224,17 @@ public class MainGUI extends JFrame {
         JButton btnAddNewRow = new JButton("Add new item");
         JLabel lblHowManyRandom = new JLabel("Number of random items");
         final JSpinner howManySpinner = new JSpinner();
-        howManySpinner.setModel(new SpinnerNumberModel(new Integer(0), new Integer(0), null, new Integer(1)));
+        howManySpinner.setModel(new SpinnerNumberModel(new Integer(1000), new Integer(0), null, new Integer(1)));
         JButton btnGenerateRandomItems = new JButton("Generate");
         JButton btnLoadFromFile = new JButton("Load");
         JButton btnSaveToFile = new JButton("Save");
         JLabel lblMaxValue = new JLabel("Max Value:");
         JLabel lblMaxSize = new JLabel("Max Size:");
         final JSpinner maxValueSpinner = new JSpinner();
-        maxValueSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+        maxValueSpinner.setModel(new SpinnerNumberModel(new Integer(1000), new Integer(1), null, new Integer(1)));
 
         final JSpinner maxSizeSpinner = new JSpinner();
-        maxSizeSpinner.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+        maxSizeSpinner.setModel(new SpinnerNumberModel(new Integer(200), new Integer(1), null, new Integer(1)));
 
         JButton btnDeleteButton = new JButton("Delete item");
         JButton btnClear = new JButton("Clear");
@@ -510,7 +479,7 @@ public class MainGUI extends JFrame {
                 int population = Integer.parseInt(populationSpinner.getValue() + "");
                 int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                 double crossoverProbability = (double)slider_1.getValue()/100;
-                iterationThread = new IterationThread(contentPane, iterations, population, crossoverProbability, itemsCollection, algorithm);
+                iterationThread = new IterationThread(contentPane, iterations, population, crossoverProbability, itemsCollection, algorithm, plotPanel.getSupport());
                 iterationThread.start();
             }
         });
@@ -546,9 +515,6 @@ public class MainGUI extends JFrame {
                     table_1.setModel(tempmodel);
                     table_1.getColumnModel().getColumn(0).setResizable(false);
                     table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
-                    maxFitnessLabel.setText(algorithm.getMaximalFitness()+"");
-                    meanFitenssLabel.setText(algorithm.getMeanFitness()+"");
-                    minFitnessLabel.setText(algorithm.getMinimalFitness()+"");
                 }
                 else JOptionPane.showMessageDialog(null, "Start first!");
             }
