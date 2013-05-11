@@ -26,7 +26,7 @@ public class IterationThread extends Thread {
     private boolean running = true;
     private SimpleXYChartSupport support;
 
-    public IterationThread(JPanel contentPane, int iteration, int population, double crossoverProbability, ItemCollection itemCollection, Algorithm algorithm, SimpleXYChartSupport support)
+    public IterationThread(JPanel contentPane, int iteration, int population, int knapsacksize, double crossoverProbability, ItemCollection itemCollection, Algorithm algorithm, SimpleXYChartSupport support)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
@@ -37,6 +37,7 @@ public class IterationThread extends Thread {
         mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
         elitismBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(5);
         selectionBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(7);
+
 
         ElitismStrategy elitismStrategy;
         if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
@@ -55,7 +56,7 @@ public class IterationThread extends Thread {
         if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
         else  selectionStrategy = new RouletteWheelSelectionStrategy();
 
-        Population initialPopulation = new Population(population, population, itemCollection);
+        Population initialPopulation = new Population(population, knapsacksize, itemCollection);
         this.algorithm = new Algorithm(crossoverStrategy, selectionStrategy, mutationStrategy, elitismStrategy, initialPopulation);
     }
 
