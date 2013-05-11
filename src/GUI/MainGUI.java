@@ -37,6 +37,16 @@ import javax.swing.table.DefaultTableModel;
 import GeneticAlgorithm.Algorithm.Algorithm;
 import GeneticAlgorithm.Models.Item;
 import GeneticAlgorithm.Models.ItemCollection;
+import GeneticAlgorithm.Models.Population;
+import GeneticAlgorithm.Strategies.Crossover.CrossoverStrategy;
+import GeneticAlgorithm.Strategies.Crossover.SplitStrategy;
+import GeneticAlgorithm.Strategies.Elitism.ElitismStrategy;
+import GeneticAlgorithm.Strategies.Elitism.NullElitismStrategy;
+import GeneticAlgorithm.Strategies.Elitism.SimpleElitismStrategy;
+import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
+import GeneticAlgorithm.Strategies.Mutation.SingleMutationStrategy;
+import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
+import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
 import net.miginfocom.swing.MigLayout;
 
 
@@ -49,10 +59,11 @@ public class MainGUI extends JFrame {
     private JPanel contentPane;
     private JTable table;
     private ListManager listManager = new ListManager();
-    private Integer randomCount = 0;
+    private Integer randomCount = 0, stepNumber = 0;
     private JTable table_1;
     private Algorithm algorithm = null;
     private IterationThread iterationThread = null;
+    private PlotPanel plotPanel = null;
 
     /**
      * Launch the application.
@@ -120,15 +131,12 @@ public class MainGUI extends JFrame {
         Dimension d = table.getPreferredSize();
         scrollPane.setPreferredSize(new Dimension(d.width,table.getRowHeight()*3+1));
 
-        JPanel panel_3 = new JPanel();
+        final JPanel panel_3 = new JPanel();
         panel_3.setForeground(Color.BLACK);
         panel_3.setBorder(new LineBorder(new Color(0, 0, 0)));
         panel_3.setBackground(Color.WHITE);
         panel_1.add(panel_3, BorderLayout.CENTER);
         panel_3.setLayout(new BorderLayout(0, 0));
-
-        final PlotPanel plotPanel = new PlotPanel();
-        panel_3.add(plotPanel, BorderLayout.CENTER);
 
         JPanel panel_7 = new JPanel();
         panel_3.add(panel_7, BorderLayout.EAST);
@@ -136,6 +144,9 @@ public class MainGUI extends JFrame {
 
         JScrollPane scrollPane_1 = new JScrollPane();
         panel_7.add(scrollPane_1, BorderLayout.CENTER);
+
+        plotPanel = new PlotPanel();
+        panel_3.add(plotPanel, BorderLayout.CENTER);
 
         table_1 = new JTable();
         table_1.setBackground(Color.WHITE);
@@ -331,7 +342,7 @@ public class MainGUI extends JFrame {
 
         final JComboBox selectionBox = new JComboBox();
         panel_4.add(selectionBox);
-        selectionBox.setModel(new DefaultComboBoxModel(new String[] {"Roulette Wheel"}));
+        selectionBox.setModel(new DefaultComboBoxModel(new String[]{"Roulette Wheel"}));
 
         JPanel panel_5 = new JPanel();
         panel_5.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -490,20 +501,24 @@ public class MainGUI extends JFrame {
 
         btnStart.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ItemCollection itemsCollection = new ItemCollection();
-                for(int i=0; i<table.getRowCount(); i++) itemsCollection.addItem(new Item(Integer.parseInt(table.getValueAt(i,1)+""), Integer.parseInt(table.getValueAt(i,2)+""), (String)table.getValueAt(i,0)));
+                plotPanel = new PlotPanel();
+                panel_3.remove(1);
+                panel_3.add(plotPanel, BorderLayout.CENTER);
                 int population = Integer.parseInt(populationSpinner.getValue() + "");
                 int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                 int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                 double crossoverProbability = (double)slider_1.getValue()/100;
-                iterationThread = new IterationThread(contentPane, iterations, population, knapsacksize, crossoverProbability, itemsCollection, algorithm, plotPanel.getSupport());
+
+                algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
+
+                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport());
                 iterationThread.start();
             }
         });
 
         btnStop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(iterationThread != null) iterationThread.pauseThread();
+                if(iterationThread != null) stepNumber = iterationThread.pauseThread();
                 else JOptionPane.showMessageDialog(null,"Start first!");
             }
         });
@@ -517,24 +532,75 @@ public class MainGUI extends JFrame {
 
         btnNextStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(algorithm != null)
+                if(algorithm == null)
                 {
-                    algorithm.step();
-                    DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
-                        Class[] columnTypes = new Class[] {
-                                String.class
-                        };
-                        public Class getColumnClass(int columnIndex) {
-                            return columnTypes[columnIndex];
-                        }
-                    };
-                    for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
-                    table_1.setModel(tempmodel);
-                    table_1.getColumnModel().getColumn(0).setResizable(false);
-                    table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
+                    int population = Integer.parseInt(populationSpinner.getValue() + "");
+                    int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
+                    double crossoverProbability = (double)slider_1.getValue()/100;
+
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
                 }
-                else JOptionPane.showMessageDialog(null, "Start first!");
+
+                stepNumber++;
+                algorithm.step();
+                long[] values = new long[3];
+                values[0] = algorithm.getMaximalFitness();
+                values[1] = (long) algorithm.getMeanFitness();
+                values[2] = algorithm.getMinimalFitness();
+                plotPanel.getSupport().addValues(stepNumber,values);
+                plotPanel.getSupport().updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
+                DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
+                    Class[] columnTypes = new Class[] {
+                            String.class
+                    };
+                    public Class getColumnClass(int columnIndex) {
+                        return columnTypes[columnIndex];
+                    }
+                };
+                for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
+                table_1.setModel(tempmodel);
+                table_1.getColumnModel().getColumn(0).setResizable(false);
+                table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
             }
         });
+    }
+
+    /**
+     * Generation Algorytm
+     * @param population
+     * @param knapsacksize
+     * @param crossoverProbability
+     * @return
+     */
+    private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability)
+    {
+        JComboBox crossoverBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(1);
+        JComboBox mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
+        JComboBox elitismBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(5);
+        JComboBox selectionBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(7);
+
+        ItemCollection itemsCollection = new ItemCollection();
+        for(int i=0; i<table.getRowCount(); i++) itemsCollection.addItem(new Item(Integer.parseInt(table.getValueAt(i,1)+""), Integer.parseInt(table.getValueAt(i,2)+""), (String)table.getValueAt(i,0)));
+
+
+        ElitismStrategy elitismStrategy;
+        if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
+        else if(elitismBox.getSelectedIndex() == 0) elitismStrategy = new NullElitismStrategy();
+        else elitismStrategy = new SimpleElitismStrategy(2);
+
+        CrossoverStrategy crossoverStrategy;
+        if(crossoverBox.getSelectedIndex() == 0) crossoverStrategy = new SplitStrategy(crossoverProbability);
+        else crossoverStrategy = new SplitStrategy(crossoverProbability);
+
+        MutationStrategy mutationStrategy;
+        if(mutationBox.getSelectedIndex() == 0) mutationStrategy = new SingleMutationStrategy();
+        else mutationStrategy = new SingleMutationStrategy();
+
+        SelectionStrategy selectionStrategy;
+        if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
+        else  selectionStrategy = new RouletteWheelSelectionStrategy();
+
+        Population initialPopulation = new Population(population, knapsacksize, itemsCollection);
+        return new Algorithm(crossoverStrategy, selectionStrategy, mutationStrategy, elitismStrategy, initialPopulation);
     }
 }
