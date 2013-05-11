@@ -19,45 +19,19 @@ import javax.swing.table.DefaultTableModel;
 
 public class IterationThread extends Thread {
 
-    private JComboBox crossoverBox, mutationBox, elitismBox, selectionBox;
     private JTable table_1;
     private int iteration;
     private Algorithm algorithm;
     private boolean running = true;
     private SimpleXYChartSupport support;
+    private int i = 0;
 
-    public IterationThread(JPanel contentPane, int iteration, int population, int knapsacksize, double crossoverProbability, ItemCollection itemCollection, Algorithm algorithm, SimpleXYChartSupport support)
+    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
         this.support = support;
-
-        table_1 = (JTable)((JViewport)((JScrollPane)((JPanel)((JPanel)((JPanel)contentPane.getComponent(0)).getComponent(1)).getComponent(1)).getComponent(0)).getComponent(0)).getComponent(0);
-        crossoverBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(1);
-        mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
-        elitismBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(5);
-        selectionBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(7);
-
-
-        ElitismStrategy elitismStrategy;
-        if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
-        else if(elitismBox.getSelectedIndex() == 0) elitismStrategy = new NullElitismStrategy();
-        else elitismStrategy = new SimpleElitismStrategy(2);
-
-        CrossoverStrategy crossoverStrategy;
-        if(crossoverBox.getSelectedIndex() == 0) crossoverStrategy = new SplitStrategy(crossoverProbability);
-        else crossoverStrategy = new SplitStrategy(crossoverProbability);
-
-        MutationStrategy mutationStrategy;
-        if(mutationBox.getSelectedIndex() == 0) mutationStrategy = new SingleMutationStrategy();
-        else mutationStrategy = new SingleMutationStrategy();
-
-        SelectionStrategy selectionStrategy;
-        if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
-        else  selectionStrategy = new RouletteWheelSelectionStrategy();
-
-        Population initialPopulation = new Population(population, knapsacksize, itemCollection);
-        this.algorithm = new Algorithm(crossoverStrategy, selectionStrategy, mutationStrategy, elitismStrategy, initialPopulation);
+        this.table_1 = table_1;
     }
 
     public void run()
@@ -75,8 +49,7 @@ public class IterationThread extends Thread {
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
 
-        long lastTime=0;
-        for(int i=1; i<iteration; i++)
+        for(i=1; i<iteration; i++)
         {
             while(!running) //Bezczynność
             {
@@ -84,21 +57,17 @@ public class IterationThread extends Thread {
                 catch (InterruptedException e) {JOptionPane.showMessageDialog(null, "Error!"); }
             }
             algorithm.step();
-            if(lastTime != System.currentTimeMillis())
-            {
-                lastTime = System.currentTimeMillis();
-                long[] values = new long[3];
-                values[0] = algorithm.getMaximalFitness();
-                values[1] = (long) algorithm.getMeanFitness();
-                values[2] = algorithm.getMinimalFitness();
-                support.addValues(lastTime,values);
-                support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
-            }
+            long[] values = new long[3];
+            values[0] = algorithm.getMaximalFitness();
+            values[1] = (long) algorithm.getMeanFitness();
+            values[2] = algorithm.getMinimalFitness();
+            support.addValues(i,values);
+            support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
         }
         JOptionPane.showMessageDialog(null,"DONE");
     }
 
-    public void pauseThread()
+    public int pauseThread()
     {
         running = false;
 
@@ -114,6 +83,7 @@ public class IterationThread extends Thread {
         table_1.setModel(tempmodel);
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
+        return i;
     }
 
     public void resumeThread(){ running = true; }
