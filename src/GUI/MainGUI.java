@@ -332,7 +332,7 @@ public class MainGUI extends JFrame {
         flowLayout.setHgap(10);
         flowLayout.setVgap(15);
         flowLayout.setAlignment(FlowLayout.LEFT);
-        tabbedPane.addTab("Symulation", null, panel_5, null);
+        tabbedPane.addTab("Simulation", null, panel_5, null);
 
         JButton btnStart = new JButton("Start");
         panel_5.add(btnStart);
@@ -374,10 +374,20 @@ public class MainGUI extends JFrame {
             }
         });
 
+
+        //makes the same thing as random list but for only one item added
+
         btnAddNewRow.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
-                model.addRow(new Object[]{"", "1", "1"});
+                table.setModel(listManager.generateList(model, 1, 1, 1, randomCount));
+                randomCount++;
+                table.getColumnModel().getColumn(0).setResizable(false);
+                table.getColumnModel().getColumn(0).setPreferredWidth(140);
+                table.getColumnModel().getColumn(1).setResizable(false);
+                table.getColumnModel().getColumn(1).setPreferredWidth(50);
+                table.getColumnModel().getColumn(2).setResizable(false);
+                table.getColumnModel().getColumn(2).setPreferredWidth(50);
                 table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
             }
         });
