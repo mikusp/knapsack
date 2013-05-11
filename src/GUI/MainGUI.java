@@ -207,15 +207,22 @@ public class MainGUI extends JFrame {
         slider_1.setLabelTable(hashtable);
         slider_1.setPaintLabels(true);
         slider_1.setSnapToTicks(true);
-        panel_6.setLayout(new MigLayout("", "[76px][113px][65px][124px][120px][220px][130px][200px]", "[29px]"));
+
+        JLabel knapsackSizeLbl = new JLabel("Knapsack Size:");
+        final JSpinner knapsackSpinner = new JSpinner();
+        knapsackSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
+
+        panel_6.setLayout(new MigLayout("", "[76px][113px][76px][113px][76px][113px][130px][200px][130px][200px]", "[29px]"));
         panel_6.add(lblPopulation, "cell 0 0,alignx left,aligny center");
         panel_6.add(populationSpinner, "cell 1 0,growx,aligny center");
-        panel_6.add(lblIteration, "cell 2 0,alignx center,aligny center");
-        panel_6.add(iterationSpinner, "cell 3 0,growx,aligny center");
-        panel_6.add(lblMutation, "cell 4 0,alignx center,aligny center");
-        panel_6.add(slider, "cell 5 0,alignx left,aligny center");
-        panel_6.add(lblCrossoverProbability, "cell 6 0,alignx center,aligny center");
-        panel_6.add(slider_1, "cell 7 0,alignx left,aligny center");
+        panel_6.add(knapsackSizeLbl, "cell 2 0,alignx left,aligny center");
+        panel_6.add(knapsackSpinner, "cell 3 0,growx,aligny center");
+        panel_6.add(lblIteration, "cell 4 0,alignx center,aligny center");
+        panel_6.add(iterationSpinner, "cell 5 0,growx,aligny center");
+        panel_6.add(lblMutation, "cell 6 0,alignx center,aligny center");
+        panel_6.add(slider, "cell 7 0,alignx left,aligny center");
+        panel_6.add(lblCrossoverProbability, "cell 8 0,alignx center,aligny center");
+        panel_6.add(slider_1, "cell 9 0,alignx left,aligny center");
 
         JPanel panel = new JPanel();
         panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -374,7 +381,6 @@ public class MainGUI extends JFrame {
             }
         });
 
-
         //makes the same thing as random list but for only one item added
 
         btnAddNewRow.addActionListener(new ActionListener() {
@@ -487,9 +493,10 @@ public class MainGUI extends JFrame {
                 ItemCollection itemsCollection = new ItemCollection();
                 for(int i=0; i<table.getRowCount(); i++) itemsCollection.addItem(new Item(Integer.parseInt(table.getValueAt(i,1)+""), Integer.parseInt(table.getValueAt(i,2)+""), (String)table.getValueAt(i,0)));
                 int population = Integer.parseInt(populationSpinner.getValue() + "");
+                int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                 int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                 double crossoverProbability = (double)slider_1.getValue()/100;
-                iterationThread = new IterationThread(contentPane, iterations, population, crossoverProbability, itemsCollection, algorithm, plotPanel.getSupport());
+                iterationThread = new IterationThread(contentPane, iterations, population, knapsacksize, crossoverProbability, itemsCollection, algorithm, plotPanel.getSupport());
                 iterationThread.start();
             }
         });
