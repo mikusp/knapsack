@@ -543,15 +543,7 @@ public class MainGUI extends JFrame {
 
         btnNextStep.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(algorithm == null)
-                {
-                    int population = Integer.parseInt(populationSpinner.getValue() + "");
-                    int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
-                    double crossoverProbability = (double)slider_1.getValue()/100;
-
-                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
-                }
-                else if(iterationThread.getActualIteration() >= Integer.parseInt(iterationSpinner.getValue() + ""))
+                if(algorithm == null || iterationThread.getActualIteration() >= Integer.parseInt(iterationSpinner.getValue() + ""))
                 {
                     plotPanel = new PlotPanel();
                     panel_3.remove(1);
