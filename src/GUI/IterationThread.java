@@ -20,18 +20,22 @@ import javax.swing.table.DefaultTableModel;
 public class IterationThread extends Thread {
 
     private JTable table_1;
-    private int iteration;
+    private int iteration, actualIteration;
     private Algorithm algorithm;
-    private boolean running = true;
+    private boolean running;
     private SimpleXYChartSupport support;
-    private int i = 0;
 
-    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support)
+    public int getActualIteration(){ return actualIteration; }
+    public void increaseActualIteration(){ actualIteration++; }
+
+    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support, boolean isRunning)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
         this.support = support;
         this.table_1 = table_1;
+        this.running = isRunning;
+        actualIteration = 1;
     }
 
     public void run()
@@ -49,7 +53,7 @@ public class IterationThread extends Thread {
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
 
-        for(i=1; i<iteration; i++)
+        while(actualIteration <= iteration)
         {
             while(!running) //Bezczynność
             {
@@ -61,13 +65,16 @@ public class IterationThread extends Thread {
             values[0] = algorithm.getMaximalFitness();
             values[1] = (long) algorithm.getMeanFitness();
             values[2] = algorithm.getMinimalFitness();
-            support.addValues(i,values);
+            support.addValues(actualIteration,values);
             support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
+            actualIteration++;
         }
-        JOptionPane.showMessageDialog(null,"DONE");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() { JOptionPane.showMessageDialog(null,"DONE","Message",JOptionPane.INFORMATION_MESSAGE); }
+        });
     }
 
-    public int pauseThread()
+    public void pauseThread()
     {
         running = false;
 
@@ -83,7 +90,6 @@ public class IterationThread extends Thread {
         table_1.setModel(tempmodel);
         table_1.getColumnModel().getColumn(0).setResizable(false);
         table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
-        return i;
     }
 
     public void resumeThread(){ running = true; }
