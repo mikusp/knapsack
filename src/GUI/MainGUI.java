@@ -9,24 +9,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Hashtable;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -59,7 +44,7 @@ public class MainGUI extends JFrame {
     private JPanel contentPane;
     private JTable table;
     private ListManager listManager = new ListManager();
-    private Integer randomCount = 0, stepNumber = 0;
+    private Integer randomCount = 0;
     private JTable table_1;
     private Algorithm algorithm = null;
     private IterationThread iterationThread = null;
@@ -86,8 +71,12 @@ public class MainGUI extends JFrame {
      */
     @SuppressWarnings({ "rawtypes", "unchecked", "serial" })
     public MainGUI() {
-        try { UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        } catch (Exception exc) { JOptionPane.showMessageDialog(null, "Error!"); }
+        try { UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel"); //"com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception exc) { SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                JOptionPane.showMessageDialog(null, "Error!", "Message", JOptionPane.ERROR_MESSAGE);
+            }
+        }); }
         setTitle("Knapsack Problem");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(0, 0, 1200, 701);
@@ -149,7 +138,6 @@ public class MainGUI extends JFrame {
         panel_3.add(plotPanel, BorderLayout.CENTER);
 
         table_1 = new JTable();
-        table_1.setBackground(Color.WHITE);
         table_1.setFillsViewportHeight(true);
         table_1.setModel(new DefaultTableModel(
                 new Object[][] {
@@ -173,7 +161,6 @@ public class MainGUI extends JFrame {
         scrollPane_1.setPreferredSize(new Dimension(d2.width,table_1.getRowHeight()*3+1));
 
         JPanel panel_8 = new JPanel();
-        panel_8.setBackground(Color.WHITE);
         panel_7.add(panel_8, BorderLayout.NORTH);
 
         JLabel lblActualBestItems = new JLabel("Best Items");
@@ -417,7 +404,11 @@ public class MainGUI extends JFrame {
                     model.removeRow(table.getSelectedRow());
                     if(table.getRowCount() > 0) table.setRowSelectionInterval(table.getRowCount()-1, table.getRowCount()-1);
                 }
-                catch(Exception exc){ JOptionPane.showMessageDialog(null, "List empty!");}
+                catch(Exception exc){ SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "List Empty!", "Message", JOptionPane.ERROR_MESSAGE);
+                    }
+                });}
             }
         });
 
@@ -437,7 +428,11 @@ public class MainGUI extends JFrame {
                         table.getColumnModel().getColumn(2).setPreferredWidth(50);
                         table.setRowSelectionInterval(0, 0);
                     }
-                    catch (Exception e1) { JOptionPane.showMessageDialog(null, "Loading Error!"); }
+                    catch (Exception e1) { SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            JOptionPane.showMessageDialog(null, "Loading Error!", "Message", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }); }
                 }
             }
         });
@@ -450,9 +445,17 @@ public class MainGUI extends JFrame {
                     File file = fileChooser.getSelectedFile();
                     try{
                         listManager.saveList(file, table.getModel());
-                        JOptionPane.showMessageDialog(null, "List Saved!");
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                JOptionPane.showMessageDialog(null, "List Saved!", "Message", JOptionPane.INFORMATION_MESSAGE);
+                            }
+                        });
                     }
-                    catch (Exception e1) { JOptionPane.showMessageDialog(null, "Saving Error!"); }
+                    catch (Exception e1) { SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            JOptionPane.showMessageDialog(null, "Saving Error!", "Message", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }); }
                 }
             }
         });
@@ -511,22 +514,30 @@ public class MainGUI extends JFrame {
 
                 algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
 
-                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport());
+                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true);
                 iterationThread.start();
             }
         });
 
         btnStop.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(iterationThread != null) stepNumber = iterationThread.pauseThread();
-                else JOptionPane.showMessageDialog(null,"Start first!");
+                if(iterationThread != null) iterationThread.pauseThread();
+                else { SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "Start First!", "Message", JOptionPane.ERROR_MESSAGE);
+                    }
+                });}
             }
         });
 
         btnResume.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(iterationThread != null) iterationThread.resumeThread();
-                else JOptionPane.showMessageDialog(null,"Start first!");
+                else { SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "Start First!", "Message", JOptionPane.ERROR_MESSAGE);
+                    }
+                });}
             }
         });
 
@@ -540,15 +551,30 @@ public class MainGUI extends JFrame {
 
                     algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
                 }
+                else if(iterationThread.getActualIteration() >= Integer.parseInt(iterationSpinner.getValue() + ""))
+                {
+                    plotPanel = new PlotPanel();
+                    panel_3.remove(1);
+                    panel_3.add(plotPanel, BorderLayout.CENTER);
+                    int population = Integer.parseInt(populationSpinner.getValue() + "");
+                    int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
+                    int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
+                    double crossoverProbability = (double)slider_1.getValue()/100;
 
-                stepNumber++;
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
+
+                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false);
+                    iterationThread.start();
+                }
+
                 algorithm.step();
                 long[] values = new long[3];
                 values[0] = algorithm.getMaximalFitness();
                 values[1] = (long) algorithm.getMeanFitness();
                 values[2] = algorithm.getMinimalFitness();
-                plotPanel.getSupport().addValues(stepNumber,values);
+                plotPanel.getSupport().addValues(iterationThread.getActualIteration(),values);
                 plotPanel.getSupport().updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
+                iterationThread.increaseActualIteration();
                 DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
                     Class[] columnTypes = new Class[] {
                             String.class
