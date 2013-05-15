@@ -50,9 +50,11 @@ public class SplitStrategy extends CrossoverStrategy {
      */
     private int generatePivotPoint(int genomeLength) {
         // result is in range [0, genomeLength - 2]
+        assert(genomeLength >= 2);
         int result = (new Random()).nextInt(genomeLength - 1);
 
         // int in range [1, genomeLength - 1]
+        assert(result >= 0 && result <= genomeLength - 2);
         return result + 1;
     }
 
@@ -69,6 +71,7 @@ public class SplitStrategy extends CrossoverStrategy {
      * @return
      */
     private Collection<Knapsack> crossoverAtPoint(Knapsack left, Knapsack right, int pivotPoint) {
+        System.out.println("Początek crossover:");
         BitSet leftGenome = left.getItemsInside();
         BitSet rightGenome = right.getItemsInside();
 
@@ -85,6 +88,15 @@ public class SplitStrategy extends CrossoverStrategy {
                 rightOffspringGenome.set(i, leftGenome.get(i));
             }
         }
+
+        assert(leftGenome.size() == leftOffspringGenome.size());
+        assert(rightGenome.size() == rightOffspringGenome.size());
+
+        System.out.println("lewy before:" + left.getItemsInside().toString());
+        System.out.println("lewy offspring:" + leftOffspringGenome.toString());
+
+        System.out.println("right before:" + right.getItemsInside().toString());
+        System.out.println("right offspring:" + rightOffspringGenome.toString());
 
         Collection<Knapsack> result = new ArrayList<>();
         result.add(new Knapsack(leftOffspringGenome,

@@ -28,10 +28,10 @@ public class Algorithm {
      * @param initialPopulation
      */
     public Algorithm(CrossoverStrategy crossoverStrategy,
-                     SelectionStrategy selectionStrategy,
-                     MutationStrategy mutationStrategy,
-                     ElitismStrategy elitismStrategy,
-                     Population initialPopulation) {
+            SelectionStrategy selectionStrategy,
+            MutationStrategy mutationStrategy,
+            ElitismStrategy elitismStrategy,
+            Population initialPopulation) {
         this.crossoverStrategy = crossoverStrategy;
         this.selectionStrategy = selectionStrategy;
         this.mutationStrategy = mutationStrategy;
@@ -69,13 +69,17 @@ public class Algorithm {
      */
     public void step() {
         // current WIP
+        System.out.println("STEP begin");
 
         // Step 1. Create empty population
         Population newPopulation = new Population(currentPopulation.getKnapsackSize(),
                 currentPopulation.getItemCollection());
 
+        System.out.println("--- population created");
+
         // Step 2. Copy elite to new population
         elitismStrategy.copyElite(currentPopulation, newPopulation);
+        System.out.println("--- elite copied");
 
         // Step 3. Breed genomes until new population is as big as old population
         // Apparent problem: if currentPopulation size is odd, newPopulation
@@ -83,18 +87,28 @@ public class Algorithm {
         // is odd we have the same situation.
         // definitely TODO
         while (newPopulation.getPopulationSize() < currentPopulation.getPopulationSize()) {
+            System.out.println("---- current population size:" + currentPopulation.getPopulationSize());
+            System.out.println("---- new population size:    " + newPopulation.getPopulationSize());
             List<Knapsack> parents = selectionStrategy.select(currentPopulation);
+
+            System.out.println("----- selected parents");
 
             Collection<Knapsack> offspring =   // getting indices is very ugly
                     crossoverStrategy.crossover(parents.get(0), parents.get(1));
 
+            System.out.println("----- crossover done");
+
             for (Knapsack k : offspring)
                 mutationStrategy.mutate(k);
+
+            System.out.println("----- mutation done");
 
             newPopulation.add(offspring);
 
             newPopulation.updateSize();
+
             currentPopulation = newPopulation;
         }
+        System.out.println("STEP end");
     }
 }
