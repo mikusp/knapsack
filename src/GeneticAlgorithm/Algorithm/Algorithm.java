@@ -106,9 +106,10 @@ public class Algorithm {
             newPopulation.add(offspring);
 
             newPopulation.updateSize();
-
-            currentPopulation = newPopulation;
         }
+
+        currentPopulation = newPopulation;
+
         System.out.println("STEP end");
     }
 }
