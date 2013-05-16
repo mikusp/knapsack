@@ -3,7 +3,9 @@ package GeneticAlgorithm.Models;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class Population {
 
@@ -107,6 +109,17 @@ public class Population {
         }
 
         return knapsack.toBinaryString();
+    }
+
+    public Knapsack getRandomKnapsack() {
+        int index = (new Random()).nextInt(populationSize);
+
+        Iterator<Knapsack> it = knapsacks.iterator();
+        for (int i = 0; it.hasNext() && i < index; it.next(), ++i) {
+
+        }
+
+        return it.next();
     }
 
     /**
