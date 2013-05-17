@@ -105,7 +105,7 @@ public class MultipleSplitStrategy extends CrossoverStrategy {
         boolean set = true;
         int currentIndex = 0;
         
-        for (int i = 0; i < genomeLength; ++i) {
+        for (int i = 0; i < genomeLength && currentIndex < pivotPoints.length; ++i) {
             result[i] = set;
             if (i >= pivotPoints[currentIndex]) {
                 currentIndex++;

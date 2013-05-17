@@ -36,7 +36,7 @@ public class NTournamentSelectionStrategy extends SelectionStrategy {
         
         Collections.sort(tournament);
         
-        return tournament.subList(0, 1);
+        return tournament.subList(0, 2);
     }
 
 }
