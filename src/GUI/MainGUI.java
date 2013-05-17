@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Hashtable;
 
@@ -24,12 +26,16 @@ import GeneticAlgorithm.Models.Item;
 import GeneticAlgorithm.Models.ItemCollection;
 import GeneticAlgorithm.Models.Population;
 import GeneticAlgorithm.Strategies.Crossover.CrossoverStrategy;
+import GeneticAlgorithm.Strategies.Crossover.MultipleSplitStrategy;
 import GeneticAlgorithm.Strategies.Crossover.SplitStrategy;
+import GeneticAlgorithm.Strategies.Crossover.UniformStrategy;
 import GeneticAlgorithm.Strategies.Elitism.ElitismStrategy;
 import GeneticAlgorithm.Strategies.Elitism.NullElitismStrategy;
 import GeneticAlgorithm.Strategies.Elitism.SimpleElitismStrategy;
 import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
 import GeneticAlgorithm.Strategies.Mutation.SingleMutationStrategy;
+import GeneticAlgorithm.Strategies.Selection.NTournamentSelectionStrategy;
+import GeneticAlgorithm.Strategies.Selection.RankSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.SelectionStrategy;
 import net.miginfocom.swing.MigLayout;
@@ -226,6 +232,10 @@ public class MainGUI extends JFrame {
         panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         tabbedPane.addTab("Items", null, panel, null);
 
+
+        /**
+         * Zakładka Items
+         */
         JButton btnAddNewRow = new JButton("Add new item");
         JLabel lblHowManyRandom = new JLabel("Number of random items");
         final JSpinner howManySpinner = new JSpinner();
@@ -295,6 +305,10 @@ public class MainGUI extends JFrame {
         );
         panel.setLayout(gl_panel);
 
+
+        /**
+         * Zakładka Strategies
+         */
         JPanel panel_4 = new JPanel();
         panel_4.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         FlowLayout flowLayout_1 = (FlowLayout) panel_4.getLayout();
@@ -308,7 +322,7 @@ public class MainGUI extends JFrame {
 
         final JComboBox crossoverBox = new JComboBox();
         panel_4.add(crossoverBox);
-        crossoverBox.setModel(new DefaultComboBoxModel(new String[] {"Split Method"}));
+        crossoverBox.setModel(new DefaultComboBoxModel(new String[] {"Split Method","Multiple Split", "Uniform Method"}));
 
         JLabel lblMutationStrategies = new JLabel("Mutation Strategy:");
         panel_4.add(lblMutationStrategies);
@@ -329,7 +343,55 @@ public class MainGUI extends JFrame {
 
         final JComboBox selectionBox = new JComboBox();
         panel_4.add(selectionBox);
-        selectionBox.setModel(new DefaultComboBoxModel(new String[]{"Roulette Wheel"}));
+        selectionBox.setModel(new DefaultComboBoxModel(new String[]{"Roulette Wheel", "NTournament", "Rank Selection"}));
+
+
+        /**
+         * Zakładka Strategies Initial Conditions
+         */
+        JPanel strInitCondPanel = new JPanel();
+        strInitCondPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+        tabbedPane.addTab("Strategies Initial Conditions", null, strInitCondPanel, null);
+
+        JLabel lblGenomePreference = new JLabel("Genome preference probability:");
+        final JSlider genomePreferenceProbabilitySlider = new JSlider();
+        Hashtable<Integer, JLabel> genomeHashtable = new Hashtable<Integer, JLabel>();
+        genomeHashtable.put(0, new JLabel("0"));
+        genomeHashtable.put(50, new JLabel("0.5"));
+        genomeHashtable.put(100, new JLabel("1"));
+        genomePreferenceProbabilitySlider.setLabelTable(genomeHashtable);
+        genomePreferenceProbabilitySlider.setPaintLabels(true);
+        genomePreferenceProbabilitySlider.setSnapToTicks(true);
+        genomePreferenceProbabilitySlider.setEnabled(false);
+
+        JLabel lblTournamentSize = new JLabel("Tournament Size:");
+        final JSpinner tournamentSizeSpinner = new JSpinner();
+        tournamentSizeSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        tournamentSizeSpinner.setEnabled(false);
+
+        JLabel lblNumberOfPivots = new JLabel("Number of pivot points:");
+        final JSpinner numberOfPivotsSpinner = new JSpinner();
+        numberOfPivotsSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        numberOfPivotsSpinner.setEnabled(false);
+
+        JLabel lblBestKnapsacks = new JLabel("Best Knapsacks:");
+        final JSpinner bestKnapsacksSpinner = new JSpinner();
+        bestKnapsacksSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        bestKnapsacksSpinner.setEnabled(false);
+
+        strInitCondPanel.setLayout(new MigLayout("", "[130px][200px][100px][100px][130px][100px][90px][100px]", "[29px]"));
+        strInitCondPanel.add(lblGenomePreference, "cell 0 0,alignx left,aligny center");
+        strInitCondPanel.add(genomePreferenceProbabilitySlider, "cell 1 0,alignx center,aligny center");
+        strInitCondPanel.add(lblTournamentSize, "cell 2 0,alignx left,aligny center");
+        strInitCondPanel.add(tournamentSizeSpinner, "cell 3 0,growx,aligny center");
+        strInitCondPanel.add(lblNumberOfPivots, "cell 4 0,alignx left,aligny center");
+        strInitCondPanel.add(numberOfPivotsSpinner, "cell 5 0,growx,aligny center");
+        strInitCondPanel.add(lblBestKnapsacks, "cell 6 0,alignx left,aligny center");
+        strInitCondPanel.add(bestKnapsacksSpinner, "cell 7 0,growx,aligny center");
+
+        /**
+         * Zakładka Simulation
+         */
 
         JPanel panel_5 = new JPanel();
         panel_5.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -342,8 +404,8 @@ public class MainGUI extends JFrame {
         JButton btnStart = new JButton("Start");
         panel_5.add(btnStart);
 
-        final JButton btnStop = new JButton("Pause");
-        panel_5.add(btnStop);
+        final JButton btnPause = new JButton("Pause");
+        panel_5.add(btnPause);
 
         final JButton btnResume = new JButton("Resume");
         panel_5.add(btnResume);
@@ -354,6 +416,30 @@ public class MainGUI extends JFrame {
         /**
          * FUNKCJE
          */
+
+        elitismBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(elitismBox.getSelectedIndex() == 1) bestKnapsacksSpinner.setEnabled(true);
+                else bestKnapsacksSpinner.setEnabled(false);
+            }
+        });
+
+        crossoverBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(crossoverBox.getSelectedIndex() == 1) numberOfPivotsSpinner.setEnabled(true);
+                else numberOfPivotsSpinner.setEnabled(false);
+
+                if(crossoverBox.getSelectedIndex() == 2) genomePreferenceProbabilitySlider.setEnabled(true);
+                else genomePreferenceProbabilitySlider.setEnabled(false);
+            }
+        });
+
+        selectionBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(selectionBox.getSelectedIndex() == 1) tournamentSizeSpinner.setEnabled(true);
+                else tournamentSizeSpinner.setEnabled(false);
+            }
+        });
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
@@ -376,6 +462,18 @@ public class MainGUI extends JFrame {
                 hashtable.put(100, new JLabel("1"));
                 slider_1.setLabelTable(hashtable);
                 slider_1.setPaintLabels(true);
+            }
+        });
+
+        genomePreferenceProbabilitySlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
+                hashtable.put(0, new JLabel("0"));
+                double temp = (double)genomePreferenceProbabilitySlider.getValue()/100;
+                hashtable.put(50, new JLabel(temp+""));
+                hashtable.put(100, new JLabel("1"));
+                genomePreferenceProbabilitySlider.setLabelTable(hashtable);
+                genomePreferenceProbabilitySlider.setPaintLabels(true);
             }
         });
 
@@ -511,15 +609,19 @@ public class MainGUI extends JFrame {
                 int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                 int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                 double crossoverProbability = (double)slider_1.getValue()/100;
+                double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
+                int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
+                int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
+                int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
 
-                algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
+                algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
                 iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true);
                 iterationThread.start();
             }
         });
 
-        btnStop.addActionListener(new ActionListener() {
+        btnPause.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(iterationThread != null) iterationThread.pauseThread();
                 else { SwingUtilities.invokeLater(new Runnable() {
@@ -552,8 +654,12 @@ public class MainGUI extends JFrame {
                     int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                     int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                     double crossoverProbability = (double)slider_1.getValue()/100;
+                    double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
+                    int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
+                    int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
+                    int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
 
-                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability);
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
                     iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false);
                     iterationThread.start();
@@ -581,6 +687,7 @@ public class MainGUI extends JFrame {
                 table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
             }
         });
+
     }
 
     /**
@@ -590,7 +697,7 @@ public class MainGUI extends JFrame {
      * @param crossoverProbability
      * @return
      */
-    private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability)
+    private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability, int amountOfBestKnapsacks, int numberOfPivotPoints, double genomeProbability, int tournamentSize)
     {
         JComboBox crossoverBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(1);
         JComboBox mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
@@ -602,12 +709,14 @@ public class MainGUI extends JFrame {
 
 
         ElitismStrategy elitismStrategy;
-        if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(2);
+        if(elitismBox.getSelectedIndex() == 1) elitismStrategy = new SimpleElitismStrategy(amountOfBestKnapsacks);
         else if(elitismBox.getSelectedIndex() == 0) elitismStrategy = new NullElitismStrategy();
-        else elitismStrategy = new SimpleElitismStrategy(2);
+        else elitismStrategy = new SimpleElitismStrategy(amountOfBestKnapsacks);
 
         CrossoverStrategy crossoverStrategy;
         if(crossoverBox.getSelectedIndex() == 0) crossoverStrategy = new SplitStrategy(crossoverProbability);
+        else if(crossoverBox.getSelectedIndex() == 1) crossoverStrategy = new MultipleSplitStrategy(crossoverProbability, numberOfPivotPoints);
+        else if(crossoverBox.getSelectedIndex() == 2) crossoverStrategy = new UniformStrategy(crossoverProbability, genomeProbability);
         else crossoverStrategy = new SplitStrategy(crossoverProbability);
 
         MutationStrategy mutationStrategy;
@@ -616,6 +725,8 @@ public class MainGUI extends JFrame {
 
         SelectionStrategy selectionStrategy;
         if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
+        else if(selectionBox.getSelectedIndex() == 2) selectionStrategy = new RankSelectionStrategy();
+        else if(selectionBox.getSelectedIndex() == 1) selectionStrategy = new NTournamentSelectionStrategy(tournamentSize);
         else  selectionStrategy = new RouletteWheelSelectionStrategy();
 
         Population initialPopulation = new Population(population, knapsacksize, itemsCollection);
