@@ -183,12 +183,12 @@ public class MainGUI extends JFrame {
         final JLabel lblPopulation = new JLabel("Population Size:");
 
         final JSpinner populationSpinner = new JSpinner();
-        populationSpinner.setModel(new SpinnerNumberModel(100, 0, null, 1));
+        populationSpinner.setModel(new SpinnerNumberModel(100, 1, null, 1));
 
         JLabel lblIteration = new JLabel("Iterations:");
 
         final JSpinner iterationSpinner = new JSpinner();
-        iterationSpinner.setModel(new SpinnerNumberModel(100, 0, null, 1));
+        iterationSpinner.setModel(new SpinnerNumberModel(100, 1, null, 1));
 
         JLabel lblMutation = new JLabel("Mutation probability:");
 
@@ -214,7 +214,7 @@ public class MainGUI extends JFrame {
 
         JLabel knapsackSizeLbl = new JLabel("Knapsack Size:");
         final JSpinner knapsackSpinner = new JSpinner();
-        knapsackSpinner.setModel(new SpinnerNumberModel(3000, 0, null, 1));
+        knapsackSpinner.setModel(new SpinnerNumberModel(3000, 1, null, 1));
 
         panel_6.setLayout(new MigLayout("", "[76px][113px][76px][113px][76px][113px][130px][200px][130px][200px]", "[29px]"));
         panel_6.add(lblPopulation, "cell 0 0,alignx left,aligny center");
@@ -239,7 +239,7 @@ public class MainGUI extends JFrame {
         JButton btnAddNewRow = new JButton("Add new item");
         JLabel lblHowManyRandom = new JLabel("Number of random items");
         final JSpinner howManySpinner = new JSpinner();
-        howManySpinner.setModel(new SpinnerNumberModel(1000, 0, null, 1));
+        howManySpinner.setModel(new SpinnerNumberModel(1000, 1, null, 1));
         JButton btnGenerateRandomItems = new JButton("Generate");
         JButton btnLoadFromFile = new JButton("Load");
         JButton btnSaveToFile = new JButton("Save");
@@ -602,22 +602,29 @@ public class MainGUI extends JFrame {
 
         btnStart.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                plotPanel = new PlotPanel();
-                panel_3.remove(1);
-                panel_3.add(plotPanel, BorderLayout.CENTER);
-                int population = Integer.parseInt(populationSpinner.getValue() + "");
-                int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
-                int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
-                double crossoverProbability = (double)slider_1.getValue()/100;
-                double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
-                int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
-                int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
-                int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
+                if(table.getRowCount() == 0) SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        JOptionPane.showMessageDialog(null, "Items list cannot be empty!", "Message", JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                else {
+                    plotPanel = new PlotPanel();
+                    panel_3.remove(1);
+                    panel_3.add(plotPanel, BorderLayout.CENTER);
+                    int population = Integer.parseInt(populationSpinner.getValue() + "");
+                    int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
+                    int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
+                    double crossoverProbability = (double)slider_1.getValue()/100;
+                    double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
+                    int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
+                    int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
+                    int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
 
-                algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
-                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize);
-                iterationThread.start();
+                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize);
+                    iterationThread.start();
+                }
             }
         });
 
