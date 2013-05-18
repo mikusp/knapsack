@@ -110,15 +110,15 @@ public class Population {
 
         return knapsack.toBinaryString();
     }
-
+    
     public Knapsack getRandomKnapsack() {
         int index = (new Random()).nextInt(populationSize);
-
+        
         Iterator<Knapsack> it = knapsacks.iterator();
         for (int i = 0; it.hasNext() && i < index; it.next(), ++i) {
-
+            
         }
-
+        
         return it.next();
     }
 
@@ -160,13 +160,12 @@ public class Population {
         return res;
     }
 
-    public int getBestItemsSize()
-    {
-        int size=0;
-        Collection<Knapsack> k = this.getBestKnapsacks(1);
-        for (Knapsack ks : k)
-            size+=ks.getKnapsackSize();
-
-        return size;
+    public int getBestItemsSize() {
+        int sum = 0;
+        
+        for (Knapsack k : this.getBestKnapsacks(1))
+            sum += k.getSize();
+        
+        return sum;
     }
 }

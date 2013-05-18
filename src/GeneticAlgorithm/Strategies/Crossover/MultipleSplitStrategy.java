@@ -81,7 +81,7 @@ public class MultipleSplitStrategy extends CrossoverStrategy {
         
         boolean[] mask = pointsToBooleanMask(pivotPoints, left.getItemsAvailable().getSize());
         
-        for (int i = 0; i < leftGenome.length(); ++i) {
+        for (int i = 0; i < left.getItemsAvailable().getSize(); ++i) {
             if (mask[i]) {
                 leftOffspring.set(i, leftGenome.get(i));
                 rightOffspring.set(i, rightGenome.get(i));

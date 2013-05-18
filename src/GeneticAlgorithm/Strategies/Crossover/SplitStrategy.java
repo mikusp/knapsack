@@ -71,14 +71,14 @@ public class SplitStrategy extends CrossoverStrategy {
      * @return
      */
     private Collection<Knapsack> crossoverAtPoint(Knapsack left, Knapsack right, int pivotPoint) {
-        System.out.println("Początek crossover:");
+//        System.out.println("Początek crossover:");
         BitSet leftGenome = left.getItemsInside();
         BitSet rightGenome = right.getItemsInside();
 
         BitSet leftOffspringGenome = new BitSet(left.getItemsAvailable().getSize());
         BitSet rightOffspringGenome = new BitSet(left.getItemsAvailable().getSize());
 
-        for (int i = 0; i < leftGenome.length(); ++i) {
+        for (int i = 0; i < left.getItemsAvailable().getSize(); ++i) {
             if (i < pivotPoint) {
                 leftOffspringGenome.set(i, leftGenome.get(i));
                 rightOffspringGenome.set(i, rightGenome.get(i));
@@ -92,11 +92,11 @@ public class SplitStrategy extends CrossoverStrategy {
         assert(leftGenome.size() == leftOffspringGenome.size());
         assert(rightGenome.size() == rightOffspringGenome.size());
 
-        System.out.println("lewy before:" + left.getItemsInside().toString());
-        System.out.println("lewy offspring:" + leftOffspringGenome.toString());
-
-        System.out.println("right before:" + right.getItemsInside().toString());
-        System.out.println("right offspring:" + rightOffspringGenome.toString());
+//        System.out.println("lewy before:" + left.getItemsInside().toString());
+//        System.out.println("lewy offspring:" + leftOffspringGenome.toString());
+//
+//        System.out.println("right before:" + right.getItemsInside().toString());
+//        System.out.println("right offspring:" + rightOffspringGenome.toString());
 
         Collection<Knapsack> result = new ArrayList<>();
         result.add(new Knapsack(leftOffspringGenome,

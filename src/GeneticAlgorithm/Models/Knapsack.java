@@ -5,6 +5,8 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Random;
 
+import GeneticAlgorithm.Utils.RandomBoolean;
+
 /**
  * Knapsack is an equivalent of genome in our algorithm.
  * It consists of zero or more items.
@@ -32,10 +34,21 @@ public class Knapsack implements Comparable<Knapsack> {
         this(new BitSet(itemsAvailable.getSize()), sizeConstraint, itemsAvailable);
 
         Random r = new Random();
-        for (int i = 0; i < itemsAvailable.getSize(); ++i) {
-            if (r.nextBoolean())
-                items.set(i);
+        while (this.getSize() <= this.getSizeConstraint()) {
+            int rand = r.nextInt(items.size());
+            
+            items.set(rand);
         }
+    }
+    
+    public int getSize() {
+        int sum = 0;
+        for (int i = 0; i < itemsAvailable.getSize(); ++i) {
+            if (items.get(i)) {
+                sum += itemsAvailable.getItem(i).getSize();
+            }
+        }
+        return sum;
     }
 
     /**
@@ -61,14 +74,16 @@ public class Knapsack implements Comparable<Knapsack> {
         int fitness = 0;
         int currentSize = 0;
 
-        for (int i = 0; i < items.length(); ++i) {
+        for (int i = 0; i < itemsAvailable.getSize(); ++i) {
             if (items.get(i)) {
                 currentSize += itemsAvailable.getItem(i).getSize();
 
-                if (currentSize <= sizeConstraint)
-                    fitness += itemsAvailable.getItem(i).getValue();
+                fitness += itemsAvailable.getItem(i).getValue();
             }
         }
+        
+        if (currentSize > sizeConstraint)
+            fitness = 1;
 
         return fitness;
     }
@@ -108,7 +123,7 @@ public class Knapsack implements Comparable<Knapsack> {
     public String toBinaryString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < items.length(); ++i) {
+        for (int i = 0; i < itemsAvailable.getSize(); ++i) {
             if (items.get(i))
                 sb.append('1');
             else
@@ -123,28 +138,14 @@ public class Knapsack implements Comparable<Knapsack> {
      * @return names of items in a knapsack, intended for use by GUI
      */
     public Collection<String> listItems() {
-        Collection<String> result = new ArrayList<String>();
+        Collection<String> result = new ArrayList<>();
 
-        for (int i = 0; i < items.length(); ++i) {
+        for (int i = 0; i < itemsAvailable.getSize(); ++i) {
             if (items.get(i) && itemsAvailable.getItem(i).getName().length() > 0)
                 result.add(itemsAvailable.getItem(i).getName());
         }
 
         return result;
-    }
-
-    /**
-     * Gets Knapsack size
-     * @return size
-     */
-    public int getKnapsackSize() {
-        int size = 0;
-        for (int i = 0; i < items.length(); ++i) {
-            if (items.get(i) && itemsAvailable.getItem(i).getName().length() > 0)
-                size += itemsAvailable.getItem(i).getSize();
-        }
-
-        return size;
     }
 
     /**

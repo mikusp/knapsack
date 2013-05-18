@@ -53,7 +53,7 @@ public class UniformStrategy extends CrossoverStrategy {
         BitSet leftOffspring = new BitSet(left.getItemsAvailable().getSize());
         BitSet rightOffspring = new BitSet(right.getItemsAvailable().getSize());
         
-        for (int i = 0; i < leftGenome.length(); ++i) {
+        for (int i = 0; i < left.getItemsAvailable().getSize(); ++i) {
             if (RandomBoolean.get(genomePreferenceProbabilty)) {
                 leftOffspring.set(i, leftGenome.get(i));
                 rightOffspring.set(i, rightGenome.get(i));

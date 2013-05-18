@@ -34,7 +34,18 @@ public class NTournamentSelectionStrategy extends SelectionStrategy {
             tournament.add(population.getRandomKnapsack());
         }
         
+        System.out.println("Population size: " + population.getPopulationSize());
+        
+        System.out.println("Got tournament with:");
+        
+        for (Knapsack k : tournament) {
+            System.out.println("Knapsack: " + k.fitness());
+        }
+        
         Collections.sort(tournament);
+        
+        System.out.println("Returning " + tournament.get(0).fitness() +
+                " " + tournament.get(1).fitness());
         
         return tournament.subList(0, 2);
     }
