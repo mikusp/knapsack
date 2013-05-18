@@ -55,7 +55,7 @@ public class IterationThread extends Thread {
             values[0] = algorithm.getMaximalFitness();
             values[1] = (long) algorithm.getMeanFitness();
             values[2] = algorithm.getMinimalFitness();
-            support.addValues(actualIteration,values);
+            support.addValues(actualIteration+(23*60*60*1000),values);
             support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
             actualIteration++;
         }
