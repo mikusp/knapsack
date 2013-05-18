@@ -57,6 +57,22 @@ public class IterationThread extends Thread {
             values[2] = algorithm.getMinimalFitness();
             support.addValues(actualIteration+(23*60*60*1000),values);
             support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
+            if(actualIteration%10 == 0)
+            {
+                DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Best Items"}) {
+                    Class[] columnTypes = new Class[] {
+                            String.class
+                    };
+                    public Class getColumnClass(int columnIndex) {
+                        return columnTypes[columnIndex];
+                    }
+                };
+                for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
+                table_1.setModel(tempmodel);
+                table_1.getColumnModel().getColumn(0).setResizable(false);
+                table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
+                lblSize.setText(algorithm.getBestItemsSize()+"");
+            }
             actualIteration++;
         }
         DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Best Items"}) {
