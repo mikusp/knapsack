@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 public class IterationThread extends Thread {
 
     private JTable table_1;
+    private JLabel lblSize;
     private int iteration, actualIteration;
     private Algorithm algorithm;
     private boolean running;
@@ -28,30 +29,19 @@ public class IterationThread extends Thread {
     public int getActualIteration(){ return actualIteration; }
     public void increaseActualIteration(){ actualIteration++; }
 
-    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support, boolean isRunning)
+    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support, boolean isRunning, JLabel lblSize)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
         this.support = support;
         this.table_1 = table_1;
         this.running = isRunning;
+        this.lblSize = lblSize;
         actualIteration = 1;
     }
 
     public void run()
     {
-        DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
-            Class[] columnTypes = new Class[] {
-                    String.class
-            };
-            public Class getColumnClass(int columnIndex) {
-                return columnTypes[columnIndex];
-            }
-        };
-        for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
-        table_1.setModel(tempmodel);
-        table_1.getColumnModel().getColumn(0).setResizable(false);
-        table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
 
         while(actualIteration <= iteration)
         {
@@ -69,6 +59,19 @@ public class IterationThread extends Thread {
             support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
             actualIteration++;
         }
+        DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Best Items"}) {
+            Class[] columnTypes = new Class[] {
+                    String.class
+            };
+            public Class getColumnClass(int columnIndex) {
+                return columnTypes[columnIndex];
+            }
+        };
+        for (String s : algorithm.getBestItems()) tempmodel.addRow(new Object[]{s});
+        table_1.setModel(tempmodel);
+        table_1.getColumnModel().getColumn(0).setResizable(false);
+        table_1.getColumnModel().getColumn(0).setPreferredWidth(140);
+        lblSize.setText(algorithm.getBestItemsSize()+"");
         SwingUtilities.invokeLater(new Runnable() {
             public void run() { JOptionPane.showMessageDialog(null,"DONE","Message",JOptionPane.INFORMATION_MESSAGE); }
         });
@@ -78,7 +81,7 @@ public class IterationThread extends Thread {
     {
         running = false;
 
-        DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Name"}) {
+        DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Best Items"}) {
             Class[] columnTypes = new Class[] {
                     String.class
             };

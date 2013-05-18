@@ -28,10 +28,10 @@ public class Algorithm {
      * @param initialPopulation
      */
     public Algorithm(CrossoverStrategy crossoverStrategy,
-            SelectionStrategy selectionStrategy,
-            MutationStrategy mutationStrategy,
-            ElitismStrategy elitismStrategy,
-            Population initialPopulation) {
+                     SelectionStrategy selectionStrategy,
+                     MutationStrategy mutationStrategy,
+                     ElitismStrategy elitismStrategy,
+                     Population initialPopulation) {
         this.crossoverStrategy = crossoverStrategy;
         this.selectionStrategy = selectionStrategy;
         this.mutationStrategy = mutationStrategy;
@@ -57,6 +57,10 @@ public class Algorithm {
 
     public Collection<String> getBestItems() {
         return currentPopulation.getBestItems();
+    }
+
+    public int getBestItemsSize(){
+        return currentPopulation.getBestItemsSize();
     }
 
     /**

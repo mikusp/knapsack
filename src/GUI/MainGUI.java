@@ -6,8 +6,6 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Hashtable;
 
@@ -84,7 +82,7 @@ public class MainGUI extends JFrame {
             }
         }); }
         setTitle("Knapsack Problem");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setBounds(0, 0, 1200, 701);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -150,7 +148,7 @@ public class MainGUI extends JFrame {
                         {null},
                 },
                 new String[] {
-                        "Name"
+                        "Best Items"
                 }
         ) {
             Class[] columnTypes = new Class[] {
@@ -169,8 +167,10 @@ public class MainGUI extends JFrame {
         JPanel panel_8 = new JPanel();
         panel_7.add(panel_8, BorderLayout.NORTH);
 
-        JLabel lblActualBestItems = new JLabel("Best Items");
+        JLabel lblActualBestItems = new JLabel("Size: ");
         panel_8.add(lblActualBestItems);
+        final JLabel lblActualBestItemsSize = new JLabel("");
+        panel_8.add(lblActualBestItemsSize);
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
         tabbedPane.setBorder(null);
@@ -183,17 +183,17 @@ public class MainGUI extends JFrame {
         final JLabel lblPopulation = new JLabel("Population Size:");
 
         final JSpinner populationSpinner = new JSpinner();
-        populationSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
+        populationSpinner.setModel(new SpinnerNumberModel(100, 0, null, 1));
 
         JLabel lblIteration = new JLabel("Iterations:");
 
         final JSpinner iterationSpinner = new JSpinner();
-        iterationSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
+        iterationSpinner.setModel(new SpinnerNumberModel(100, 0, null, 1));
 
         JLabel lblMutation = new JLabel("Mutation probability:");
 
         final JSlider slider = new JSlider();
-        Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
+        Hashtable<Integer, JLabel> hashtable = new Hashtable<>();
         hashtable.put(0, new JLabel("0"));
         hashtable.put(50, new JLabel("0.5"));
         hashtable.put(100, new JLabel("1"));
@@ -204,7 +204,7 @@ public class MainGUI extends JFrame {
         JLabel lblCrossoverProbability = new JLabel("Crossover probability:");
 
         final JSlider slider_1 = new JSlider();
-        hashtable = new Hashtable<Integer, JLabel>();
+        hashtable = new Hashtable<>();
         hashtable.put(0, new JLabel("0"));
         hashtable.put(50, new JLabel("0.5"));
         hashtable.put(100, new JLabel("1"));
@@ -214,7 +214,7 @@ public class MainGUI extends JFrame {
 
         JLabel knapsackSizeLbl = new JLabel("Knapsack Size:");
         final JSpinner knapsackSpinner = new JSpinner();
-        knapsackSpinner.setModel(new SpinnerNumberModel(new Integer(500), new Integer(0), null, new Integer(1)));
+        knapsackSpinner.setModel(new SpinnerNumberModel(3000, 0, null, 1));
 
         panel_6.setLayout(new MigLayout("", "[76px][113px][76px][113px][76px][113px][130px][200px][130px][200px]", "[29px]"));
         panel_6.add(lblPopulation, "cell 0 0,alignx left,aligny center");
@@ -239,17 +239,17 @@ public class MainGUI extends JFrame {
         JButton btnAddNewRow = new JButton("Add new item");
         JLabel lblHowManyRandom = new JLabel("Number of random items");
         final JSpinner howManySpinner = new JSpinner();
-        howManySpinner.setModel(new SpinnerNumberModel(new Integer(1000), new Integer(0), null, new Integer(1)));
+        howManySpinner.setModel(new SpinnerNumberModel(1000, 0, null, 1));
         JButton btnGenerateRandomItems = new JButton("Generate");
         JButton btnLoadFromFile = new JButton("Load");
         JButton btnSaveToFile = new JButton("Save");
         JLabel lblMaxValue = new JLabel("Max Value:");
         JLabel lblMaxSize = new JLabel("Max Size:");
         final JSpinner maxValueSpinner = new JSpinner();
-        maxValueSpinner.setModel(new SpinnerNumberModel(new Integer(1000), new Integer(1), null, new Integer(1)));
+        maxValueSpinner.setModel(new SpinnerNumberModel(1000, 1, null, 1));
 
         final JSpinner maxSizeSpinner = new JSpinner();
-        maxSizeSpinner.setModel(new SpinnerNumberModel(new Integer(200), new Integer(1), null, new Integer(1)));
+        maxSizeSpinner.setModel(new SpinnerNumberModel(200, 1, null, 1));
 
         JButton btnDeleteButton = new JButton("Delete item");
         JButton btnClear = new JButton("Clear");
@@ -355,7 +355,7 @@ public class MainGUI extends JFrame {
 
         JLabel lblGenomePreference = new JLabel("Genome preference probability:");
         final JSlider genomePreferenceProbabilitySlider = new JSlider();
-        Hashtable<Integer, JLabel> genomeHashtable = new Hashtable<Integer, JLabel>();
+        Hashtable<Integer, JLabel> genomeHashtable = new Hashtable<>();
         genomeHashtable.put(0, new JLabel("0"));
         genomeHashtable.put(50, new JLabel("0.5"));
         genomeHashtable.put(100, new JLabel("1"));
@@ -366,17 +366,17 @@ public class MainGUI extends JFrame {
 
         JLabel lblTournamentSize = new JLabel("Tournament Size:");
         final JSpinner tournamentSizeSpinner = new JSpinner();
-        tournamentSizeSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        tournamentSizeSpinner.setModel(new SpinnerNumberModel(10, 1, null, 1));
         tournamentSizeSpinner.setEnabled(false);
 
         JLabel lblNumberOfPivots = new JLabel("Number of pivot points:");
         final JSpinner numberOfPivotsSpinner = new JSpinner();
-        numberOfPivotsSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        numberOfPivotsSpinner.setModel(new SpinnerNumberModel(10, 1, null, 1));
         numberOfPivotsSpinner.setEnabled(false);
 
         JLabel lblBestKnapsacks = new JLabel("Best Knapsacks:");
         final JSpinner bestKnapsacksSpinner = new JSpinner();
-        bestKnapsacksSpinner.setModel(new SpinnerNumberModel(new Integer(10), new Integer(1), null, new Integer(1)));
+        bestKnapsacksSpinner.setModel(new SpinnerNumberModel(10, 1, null, 1));
         bestKnapsacksSpinner.setEnabled(false);
 
         strInitCondPanel.setLayout(new MigLayout("", "[130px][200px][100px][100px][130px][100px][90px][100px]", "[29px]"));
@@ -443,7 +443,7 @@ public class MainGUI extends JFrame {
 
         slider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
+                Hashtable<Integer, JLabel> hashtable = new Hashtable<>();
                 hashtable.put(0, new JLabel("0"));
                 double temp = (double)slider.getValue()/100;
                 hashtable.put(50, new JLabel(temp+""));
@@ -455,7 +455,7 @@ public class MainGUI extends JFrame {
 
         slider_1.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
+                Hashtable<Integer, JLabel> hashtable = new Hashtable<>();
                 hashtable.put(0, new JLabel("0"));
                 double temp = (double)slider_1.getValue()/100;
                 hashtable.put(50, new JLabel(temp+""));
@@ -467,7 +467,7 @@ public class MainGUI extends JFrame {
 
         genomePreferenceProbabilitySlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                Hashtable<Integer, JLabel> hashtable = new Hashtable<Integer, JLabel>();
+                Hashtable<Integer, JLabel> hashtable = new Hashtable<>();
                 hashtable.put(0, new JLabel("0"));
                 double temp = (double)genomePreferenceProbabilitySlider.getValue()/100;
                 hashtable.put(50, new JLabel(temp+""));
@@ -616,7 +616,7 @@ public class MainGUI extends JFrame {
 
                 algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
-                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true);
+                iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize);
                 iterationThread.start();
             }
         });
@@ -661,7 +661,7 @@ public class MainGUI extends JFrame {
 
                     algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
-                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false);
+                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false, lblActualBestItemsSize);
                     iterationThread.start();
                 }
 
@@ -691,11 +691,7 @@ public class MainGUI extends JFrame {
     }
 
     /**
-     * Generation Algorytm
-     * @param population
-     * @param knapsacksize
-     * @param crossoverProbability
-     * @return
+     * Generation Algorithm
      */
     private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability, int amountOfBestKnapsacks, int numberOfPivotPoints, double genomeProbability, int tournamentSize)
     {

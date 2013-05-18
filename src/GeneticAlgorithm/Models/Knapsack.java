@@ -123,7 +123,7 @@ public class Knapsack implements Comparable<Knapsack> {
      * @return names of items in a knapsack, intended for use by GUI
      */
     public Collection<String> listItems() {
-        Collection<String> result = new ArrayList<>();
+        Collection<String> result = new ArrayList<String>();
 
         for (int i = 0; i < items.length(); ++i) {
             if (items.get(i) && itemsAvailable.getItem(i).getName().length() > 0)
@@ -131,6 +131,20 @@ public class Knapsack implements Comparable<Knapsack> {
         }
 
         return result;
+    }
+
+    /**
+     * Gets Knapsack size
+     * @return size
+     */
+    public int getKnapsackSize() {
+        int size = 0;
+        for (int i = 0; i < items.length(); ++i) {
+            if (items.get(i) && itemsAvailable.getItem(i).getName().length() > 0)
+                size += itemsAvailable.getItem(i).getSize();
+        }
+
+        return size;
     }
 
     /**
