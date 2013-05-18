@@ -57,8 +57,8 @@ public class Population {
         return fitness;
     }
 
-    public Iterable<Knapsack> getKnapsacks() {
-        return knapsacks;
+    public List<Knapsack> getKnapsacks() {
+        return (List<Knapsack>)knapsacks;
     }
 
     public int getPopulationSize() {
@@ -110,15 +110,15 @@ public class Population {
 
         return knapsack.toBinaryString();
     }
-
+    
     public Knapsack getRandomKnapsack() {
         int index = (new Random()).nextInt(populationSize);
-
+        
         Iterator<Knapsack> it = knapsacks.iterator();
         for (int i = 0; it.hasNext() && i < index; it.next(), ++i) {
-
+            
         }
-
+        
         return it.next();
     }
 

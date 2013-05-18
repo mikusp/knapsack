@@ -1,6 +1,7 @@
 package GeneticAlgorithm.Strategies.Selection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -18,7 +19,10 @@ public class RankSelectionStrategy extends SelectionStrategy {
         
         Random rand = new Random();
         
-        Iterator<Knapsack> knapsacks = population.getBestKnapsacks(population.getPopulationSize()).iterator();
+        List<Knapsack> knapsacks = population.getKnapsacks();
+        
+        Collections.sort(knapsacks);
+        Collections.reverse(knapsacks);
         
         for (int i = 0; i < 2; ++i) {
             result.add(selectGenome(knapsacks, rand.nextInt(populationFitness)));
@@ -37,13 +41,19 @@ public class RankSelectionStrategy extends SelectionStrategy {
         return result;
     }
     
-    private Knapsack selectGenome(Iterator<Knapsack> iter, int threshold) {
+    private Knapsack selectGenome(List<Knapsack> iter, int threshold) {
         int currentSum = 0;
+        int currentFitness = 1;
         
-        for (int i = 1;; currentSum += i++, iter.next()) {
+        for (Knapsack k : iter) {
+            currentSum += currentFitness++;
+            
             if (currentSum >= threshold)
-                return iter.next();
+                return k;
         }
+        
+        System.err.println("ARGH!!! result is null");
+        return null;
     }
 
 }
