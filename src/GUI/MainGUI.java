@@ -32,6 +32,7 @@ import GeneticAlgorithm.Strategies.Elitism.NullElitismStrategy;
 import GeneticAlgorithm.Strategies.Elitism.SimpleElitismStrategy;
 import GeneticAlgorithm.Strategies.Mutation.MutationStrategy;
 import GeneticAlgorithm.Strategies.Mutation.SingleMutationStrategy;
+import GeneticAlgorithm.Strategies.Mutation.SingleOnlyImprovingStrategy;
 import GeneticAlgorithm.Strategies.Selection.NTournamentSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.RankSelectionStrategy;
 import GeneticAlgorithm.Strategies.Selection.RouletteWheelSelectionStrategy;
@@ -100,9 +101,7 @@ public class MainGUI extends JFrame {
         table = new JTable();
         table.setFillsViewportHeight(true);
         table.setModel(new DefaultTableModel(
-                new Object[][] {
-                        {"Item1", "1", "1"},
-                },
+                new Object[][] {},
                 new String[] {
                         "Name", "Size", "Value"
                 }
@@ -114,13 +113,7 @@ public class MainGUI extends JFrame {
                 return columnTypes[columnIndex];
             }
         });
-        table.getColumnModel().getColumn(0).setResizable(false);
-        table.getColumnModel().getColumn(0).setPreferredWidth(140);
-        table.getColumnModel().getColumn(1).setResizable(false);
-        table.getColumnModel().getColumn(1).setPreferredWidth(50);
-        table.getColumnModel().getColumn(2).setResizable(false);
-        table.getColumnModel().getColumn(2).setPreferredWidth(50);
-        table.setRowSelectionInterval(0, 0);
+
         scrollPane.setViewportView(table);
         Dimension d = table.getPreferredSize();
         scrollPane.setPreferredSize(new Dimension(d.width,table.getRowHeight()*3+1));
@@ -330,7 +323,7 @@ public class MainGUI extends JFrame {
 
         final JComboBox mutationBox = new JComboBox();
         panel_4.add(mutationBox);
-        mutationBox.setModel(new DefaultComboBoxModel(new String[] {"Single Method"}));
+        mutationBox.setModel(new DefaultComboBoxModel(new String[] {"Single Method", "Single Only Improving"}));
 
         JLabel lblStrategies = new JLabel("Elitism Strategy:");
         panel_4.add(lblStrategies);
@@ -596,9 +589,11 @@ public class MainGUI extends JFrame {
                 table.getColumnModel().getColumn(1).setPreferredWidth(50);
                 table.getColumnModel().getColumn(2).setResizable(false);
                 table.getColumnModel().getColumn(2).setPreferredWidth(50);
+                randomCount = 0;
             }
         });
 
+        btnGenerateRandomItems.doClick();
         //Generating
 
         btnStart.addActionListener(new ActionListener() {
@@ -616,12 +611,13 @@ public class MainGUI extends JFrame {
                     int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                     int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                     double crossoverProbability = (double)slider_1.getValue()/100;
+                    double mutationProbability = (double)slider.getValue()/100;
                     double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
                     int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
                     int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
                     int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
 
-                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, mutationProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
                     iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize);
                     iterationThread.start();
@@ -662,12 +658,13 @@ public class MainGUI extends JFrame {
                     int knapsacksize = Integer.parseInt(knapsackSpinner.getValue() + "");
                     int iterations = Integer.parseInt(iterationSpinner.getValue() + "");
                     double crossoverProbability = (double)slider_1.getValue()/100;
+                    double mutationProbability = (double)slider.getValue()/100;
                     double genomeProbability = (double)genomePreferenceProbabilitySlider.getValue()/100;
                     int tournamentSize = Integer.parseInt(tournamentSizeSpinner.getValue() + "");
                     int numberOfPivotPoints = Integer.parseInt(numberOfPivotsSpinner.getValue() + "");
                     int amountOfBestKnapsacks = Integer.parseInt(bestKnapsacksSpinner.getValue() + "");
 
-                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
+                    algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, mutationProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
                     iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false, lblActualBestItemsSize);
                     iterationThread.start();
@@ -701,7 +698,7 @@ public class MainGUI extends JFrame {
     /**
      * Generation Algorithm
      */
-    private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability, int amountOfBestKnapsacks, int numberOfPivotPoints, double genomeProbability, int tournamentSize)
+    private Algorithm generateAlgorithm(int population, int knapsacksize, double crossoverProbability, double mutationProbability, int amountOfBestKnapsacks, int numberOfPivotPoints, double genomeProbability, int tournamentSize)
     {
         JComboBox crossoverBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(1);
         JComboBox mutationBox = (JComboBox)((JPanel)((JTabbedPane)contentPane.getComponent(1)).getComponent(2)).getComponent(3);
@@ -724,8 +721,9 @@ public class MainGUI extends JFrame {
         else crossoverStrategy = new SplitStrategy(crossoverProbability);
 
         MutationStrategy mutationStrategy;
-        if(mutationBox.getSelectedIndex() == 0) mutationStrategy = new SingleMutationStrategy();
-        else mutationStrategy = new SingleMutationStrategy();
+        if(mutationBox.getSelectedIndex() == 0) mutationStrategy = new SingleMutationStrategy(mutationProbability);
+        else if(mutationBox.getSelectedIndex() == 1) mutationStrategy = new SingleOnlyImprovingStrategy(mutationProbability);
+        else mutationStrategy = new SingleMutationStrategy(mutationProbability);
 
         SelectionStrategy selectionStrategy;
         if(selectionBox.getSelectedIndex() == 0) selectionStrategy = new RouletteWheelSelectionStrategy();
