@@ -101,9 +101,7 @@ public class MainGUI extends JFrame {
         table = new JTable();
         table.setFillsViewportHeight(true);
         table.setModel(new DefaultTableModel(
-                new Object[][] {
-                        {"Item1", "1", "1"},
-                },
+                new Object[][] {},
                 new String[] {
                         "Name", "Size", "Value"
                 }
@@ -115,13 +113,7 @@ public class MainGUI extends JFrame {
                 return columnTypes[columnIndex];
             }
         });
-        table.getColumnModel().getColumn(0).setResizable(false);
-        table.getColumnModel().getColumn(0).setPreferredWidth(140);
-        table.getColumnModel().getColumn(1).setResizable(false);
-        table.getColumnModel().getColumn(1).setPreferredWidth(50);
-        table.getColumnModel().getColumn(2).setResizable(false);
-        table.getColumnModel().getColumn(2).setPreferredWidth(50);
-        table.setRowSelectionInterval(0, 0);
+
         scrollPane.setViewportView(table);
         Dimension d = table.getPreferredSize();
         scrollPane.setPreferredSize(new Dimension(d.width,table.getRowHeight()*3+1));
@@ -597,9 +589,11 @@ public class MainGUI extends JFrame {
                 table.getColumnModel().getColumn(1).setPreferredWidth(50);
                 table.getColumnModel().getColumn(2).setResizable(false);
                 table.getColumnModel().getColumn(2).setPreferredWidth(50);
+                randomCount = 0;
             }
         });
 
+        btnGenerateRandomItems.doClick();
         //Generating
 
         btnStart.addActionListener(new ActionListener() {
