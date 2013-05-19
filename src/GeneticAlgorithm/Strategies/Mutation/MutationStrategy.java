@@ -9,6 +9,12 @@ import GeneticAlgorithm.Models.Knapsack;
  */
 public abstract class MutationStrategy {
 
+    protected final double mutationProbability;
+    
+    public MutationStrategy(double mutationProbability) {
+        this.mutationProbability = mutationProbability;
+    }
+    
     /**
      * Mutate knapsack with given probability of mutation.
      * @param knapsack offspring from bred knapsacks
