@@ -28,26 +28,37 @@ public class NTournamentSelectionStrategy extends SelectionStrategy {
 
     @Override
     public List<Knapsack> select(Population population) {
+        List<Knapsack> result = new ArrayList<>();
+        
+        while (result.size() < 2) {
+            Knapsack k = getBestFromTournament(population);
+            
+            if (!result.contains(k))
+                result.add(k);
+        }
+        
+        assert(result.size() == 2);
+        
+        return result;
+    }
+
+    private Knapsack getBestFromTournament(Population population) {
         List<Knapsack> tournament = new ArrayList<>();
         
-        for (int i = 0; i < tournamentSize; ++i) {
-            tournament.add(population.getRandomKnapsack());
+        while (tournament.size() < tournamentSize) {
+            Knapsack k = population.getRandomKnapsack();
+            
+            if (!tournament.contains(k))
+                tournament.add(k);
         }
         
-        System.out.println("Population size: " + population.getPopulationSize());
-        
-        System.out.println("Got tournament with:");
-        
-        for (Knapsack k : tournament) {
-            System.out.println("Knapsack: " + k.fitness());
-        }
+        assert(tournament.size() == tournamentSize);
         
         Collections.sort(tournament);
         
-        System.out.println("Returning " + tournament.get(0).fitness() +
-                " " + tournament.get(1).fitness());
+        System.out.println("Wybrano plecak z fitness: " + tournament.get(0).fitness());
         
-        return tournament.subList(0, 2);
+        return tournament.get(0);
     }
 
 }
