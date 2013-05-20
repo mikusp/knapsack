@@ -21,7 +21,7 @@ public class IterationThread extends Thread {
 
     private JTable table_1;
     private JLabel lblSize;
-    private int iteration, actualIteration;
+    private int iteration, actualIteration, actualMax, actualMaxCount;
     private Algorithm algorithm;
     private boolean running;
     private SimpleXYChartSupport support;
@@ -38,12 +38,13 @@ public class IterationThread extends Thread {
         this.running = isRunning;
         this.lblSize = lblSize;
         actualIteration = 1;
+        actualMax = 0;
+        actualMaxCount = 0;
     }
 
     public void run()
     {
-
-        while(actualIteration <= iteration)
+        while(actualIteration <= iteration && actualMaxCount != 20)
         {
             while(!running) //Bezczynność
             {
@@ -55,6 +56,13 @@ public class IterationThread extends Thread {
             values[0] = algorithm.getMaximalFitness();
             values[1] = (long) algorithm.getMeanFitness();
             values[2] = algorithm.getMinimalFitness();
+            if(actualMax != algorithm.getMaximalFitness())
+            {
+                actualMax = algorithm.getMaximalFitness();
+                actualMaxCount = 0;
+            }
+            else actualMaxCount++;
+            System.out.println(actualMaxCount);
             support.addValues(actualIteration+(23*60*60*1000),values);
             support.updateDetails(new String[]{values[0]+"",values[1]+"",values[2]+""});
             if(actualIteration%10 == 0)
@@ -75,6 +83,7 @@ public class IterationThread extends Thread {
             }
             actualIteration++;
         }
+        actualIteration = iteration;
         DefaultTableModel tempmodel =  new DefaultTableModel(null,new String[] {"Best Items"}) {
             Class[] columnTypes = new Class[] {
                     String.class
