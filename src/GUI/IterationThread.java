@@ -25,11 +25,12 @@ public class IterationThread extends Thread {
     private Algorithm algorithm;
     private boolean running;
     private SimpleXYChartSupport support;
+    private boolean stopiteration = false;
 
     public int getActualIteration(){ return actualIteration; }
     public void increaseActualIteration(){ actualIteration++; }
 
-    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support, boolean isRunning, JLabel lblSize)
+    public IterationThread(JTable table_1, int iteration, Algorithm algorithm, SimpleXYChartSupport support, boolean isRunning, JLabel lblSize, boolean stopiteration)
     {
         this.iteration = iteration;
         this.algorithm = algorithm;
@@ -37,6 +38,7 @@ public class IterationThread extends Thread {
         this.table_1 = table_1;
         this.running = isRunning;
         this.lblSize = lblSize;
+        this.stopiteration = stopiteration;
         actualIteration = 1;
         actualMax = 0;
         actualMaxCount = 0;
@@ -44,7 +46,7 @@ public class IterationThread extends Thread {
 
     public void run()
     {
-        while(actualIteration <= iteration && actualMaxCount != 20)
+        while((!stopiteration && actualIteration <= iteration) || (stopiteration && actualMaxCount != iteration))
         {
             while(!running) //Bezczynność
             {

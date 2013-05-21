@@ -210,17 +210,20 @@ public class MainGUI extends JFrame {
         final JSpinner knapsackSpinner = new JSpinner();
         knapsackSpinner.setModel(new SpinnerNumberModel(3000, 1, null, 1));
 
-        panel_6.setLayout(new MigLayout("", "[76px][113px][76px][113px][76px][113px][130px][200px][130px][200px]", "[29px]"));
+        final JCheckBox checkBox = new JCheckBox("Stop condition");
+
+        panel_6.setLayout(new MigLayout("", "[76px][113px][76px][113px][76px][113px][20px][130px][200px][130px][200px]", "[29px]"));
         panel_6.add(lblPopulation, "cell 0 0,alignx left,aligny center");
         panel_6.add(populationSpinner, "cell 1 0,growx,aligny center");
         panel_6.add(knapsackSizeLbl, "cell 2 0,alignx left,aligny center");
         panel_6.add(knapsackSpinner, "cell 3 0,growx,aligny center");
         panel_6.add(lblIteration, "cell 4 0,alignx center,aligny center");
         panel_6.add(iterationSpinner, "cell 5 0,growx,aligny center");
-        panel_6.add(lblMutation, "cell 6 0,alignx center,aligny center");
-        panel_6.add(slider, "cell 7 0,alignx left,aligny center");
-        panel_6.add(lblCrossoverProbability, "cell 8 0,alignx center,aligny center");
-        panel_6.add(slider_1, "cell 9 0,alignx left,aligny center");
+        panel_6.add(checkBox, "cell 6 0");
+        panel_6.add(lblMutation, "cell 7 0,alignx center,aligny center");
+        panel_6.add(slider, "cell 8 0,alignx left,aligny center");
+        panel_6.add(lblCrossoverProbability, "cell 9 0,alignx center,aligny center");
+        panel_6.add(slider_1, "cell 10 0,alignx left,aligny center");
 
         JPanel panel = new JPanel();
         panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -619,7 +622,7 @@ public class MainGUI extends JFrame {
 
                     algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, mutationProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
-                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize);
+                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), true, lblActualBestItemsSize, checkBox.isSelected());
                     iterationThread.start();
                 }
             }
@@ -666,7 +669,7 @@ public class MainGUI extends JFrame {
 
                     algorithm = generateAlgorithm(population, knapsacksize, crossoverProbability, mutationProbability, amountOfBestKnapsacks, numberOfPivotPoints, genomeProbability, tournamentSize);
 
-                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false, lblActualBestItemsSize);
+                    iterationThread = new IterationThread(table_1, iterations, algorithm, plotPanel.getSupport(), false, lblActualBestItemsSize, checkBox.isSelected());
                     iterationThread.start();
                 }
 
